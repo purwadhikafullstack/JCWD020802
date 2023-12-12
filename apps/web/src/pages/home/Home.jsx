@@ -1,6 +1,17 @@
+import { Button } from "@material-tailwind/react"
+
 function Home() {
   // const [sampleData, setSampleData] = useState([]);
+  // const [sampleData, setSampleData] = useState([]);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const { data } = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/sample`,
+  //     );
+  //     setSampleData(data);
+  //   })();
+  // }, []);
   // useEffect(() => {
   //   (async () => {
   //     const { data } = await axios.get(
@@ -12,6 +23,10 @@ function Home() {
 
   return (
     <div>
+      <Button variant="filled">filled</Button>
+      <Button variant="gradient">gradient</Button>
+      <Button variant="outlined">outlined</Button>
+      <Button variant="text">text</Button>
       <h1 className="text-9xl">YO</h1>
       {/*  <div>
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
