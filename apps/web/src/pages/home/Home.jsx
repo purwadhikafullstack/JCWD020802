@@ -2,7 +2,16 @@ import { Button } from "@material-tailwind/react"
 
 function Home() {
   // const [sampleData, setSampleData] = useState([]);
+  // const [sampleData, setSampleData] = useState([]);
 
+  // useEffect(() => {
+  //   (async () => {
+  //     const { data } = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/sample`,
+  //     );
+  //     setSampleData(data);
+  //   })();
+  // }, []);
   // useEffect(() => {
   //   (async () => {
   //     const { data } = await axios.get(
@@ -31,6 +40,8 @@ function Home() {
       <h3>Test Data</h3>
       {sampleData.map((data, idx) => (
         <div key={idx.toString()}>{data.name}</div>
+      ))} */}
+    </div>
       ))} */}
     </div>
   );
