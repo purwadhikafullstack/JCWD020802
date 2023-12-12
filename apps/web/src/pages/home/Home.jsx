@@ -42,8 +42,6 @@ function Home() {
         <div key={idx.toString()}>{data.name}</div>
       ))} */}
     </div>
-      ))} */}
-    </div>
   );
 }
 
