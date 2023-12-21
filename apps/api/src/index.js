@@ -1,4 +1,4 @@
-import express, { json, Express } from 'express';
+import express, { json, Express, urlencoded } from 'express';
 import cors from 'cors';
 import { join } from 'path';
 import { NODE_ENV, PORT } from './config';
@@ -56,7 +56,9 @@ const globalAPIErrorHandler = (app) => {
     const app = express();
     app.use(cors());
     app.use(json());
-    app.use('/api', router);
+    app.use(urlencoded({ extended: true }));
+    app.use("/public", express.static("./public"));
+    app.use('/', router);
 
     globalAPIErrorHandler(app);
     serveWebProjectBuildResult(app);

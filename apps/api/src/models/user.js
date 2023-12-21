@@ -19,8 +19,8 @@ export const init = (sequelize) => {
   User.init(
     {
       fullname: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
       },
       username: {
         type: DataTypes.STRING,
@@ -40,11 +40,11 @@ export const init = (sequelize) => {
       },
       photoProfile: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       role: {
         type: DataTypes.STRING,
-        allowNull: false,
+        defaultValue: 'Customer',
       },
       isVerified: {
         type: DataTypes.BOOLEAN,
