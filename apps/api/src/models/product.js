@@ -12,7 +12,8 @@ export default class Product extends Model {
     Product.hasMany(models.StockMutation),
     Product.hasMany(models.TransactionProduct),
     Product.hasMany(models.Cart),
-    Product.belongsTo(models.Address)
+    Product.hasMany(models.ProductPicture),
+    Product.belongsTo(models.ProductCategory)
   }
 }
 
