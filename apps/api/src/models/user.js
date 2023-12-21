@@ -19,8 +19,8 @@ export const init = (sequelize) => {
   User.init(
     {
       fullname: {
-      type: DataTypes.STRING,
-      allowNull: false,
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       username: {
         type: DataTypes.STRING,
