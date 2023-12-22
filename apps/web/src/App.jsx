@@ -43,6 +43,11 @@ function App() {
       <RouterProvider router={router} />
       <Footer />
     </div>
+    <div>
+      <NavBar />
+      <RouterProvider router={router} />
+      <Footer />
+    </div>
   );
 }
 
