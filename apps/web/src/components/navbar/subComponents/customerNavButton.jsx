@@ -1,4 +1,4 @@
-import { Avatar, Button, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
+import { Avatar, Button, IconButton, Menu, MenuHandler, MenuItem, MenuList, MobileNav, Typography } from "@material-tailwind/react";
 import { useState } from "react";
 import { FaExchangeAlt, FaSignOutAlt } from "react-icons/fa";
 import { FaBell, FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
@@ -13,10 +13,10 @@ export function CustomerNavButton() {
 
     const handleLogOut = async () => {
         try {
-        localStorage.removeItem("token");
-        window.location.reload();
+            localStorage.removeItem("token");
+            window.location.reload();
         } catch (error) {
-        console.log(error);
+            console.log(error);
         }
     };
 
@@ -33,13 +33,13 @@ export function CustomerNavButton() {
         },
         {
             label: "Log Out",
-            icon: <FaSignOutAlt />,
+            icon: <FaSignOutAlt color="red" />,
             handle: handleLogOut
         },
     ];
 
     const customerMenu = (
-        <MenuList className="p-1">
+        <MenuList className="p-1 hidden lg:flex lg:flex-col">
             {customerMenuItems.map((item, key) => {
             const isLastItem = key === customerMenuItems.length - 1;
             return (
@@ -83,8 +83,8 @@ export function CustomerNavButton() {
         }
     ];
 
-    const customerNavList = (
-        <div className="mr-4 hidden lg:block">
+    const customerIcons = (
+        <div className="hidden lg:block">
             <ul className="mt-2 mb-4 flex flex-col lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
                 {customerIconButtons.map((item) => (
                     <IconButton variant="text" className="mx-1">
@@ -114,18 +114,61 @@ export function CustomerNavButton() {
         },
         {
             label: "Log Out",
-            icon: <FiLogOut />,
+            icon: <FiLogOut color="red" />,
         },
     ];
+
+    const mobileCustomerMenu = (
+        <MenuList className="p-1 flex flex-col lg:hidden">
+            {mobileCustomerMenuItems.map((item, key) => {
+            const isLastItem = key === mobileCustomerMenuItems.length - 1;
+            return (
+                <MenuItem
+                key={item.label}
+                onClick={item.handle}
+                //   href={}
+                className={`flex items-center gap-2 rounded ${
+                    isLastItem
+                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                    : ""
+                }`}
+                >
+                {item.icon}
+                <Typography
+                    as="span"
+                    variant="small"
+                    className="font-normal"
+                    color={isLastItem ? "red" : "inherit"}
+                >
+                    {item.label}
+                </Typography>
+                </MenuItem>
+            );
+            })}
+        </MenuList>
+    );
+    
     return (
-        <div className="flex">
-            {customerNavList}
-            <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
-                <MenuHandler>
-                    <Avatar size="sm" src="https://docs.material-tailwind.com/img/face-2.jpg" alt="avatar" className="mr-5" />
-                </MenuHandler>
-                {customerMenu}
-            </Menu>
+        <div>
+            <div className="flex items-center justify-center">
+                {customerIcons}
+                <div className="ml-5 block lg:hidden">
+                    <IconButton variant="text">
+                        <FaBell fontSize={'20px'} />
+                    </IconButton>
+                </div>
+                <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
+                    <MenuHandler>
+                        <div className="flex items-center justify-center ml-2">
+                            <Avatar size="sm" src="https://docs.material-tailwind.com/img/face-2.jpg" alt="avatar" className="mx-6 lg:mr-10" />
+                        </div>
+                    </MenuHandler>
+                    {customerMenu}
+                    <MobileNav>
+                        {mobileCustomerMenu}
+                    </MobileNav>
+                </Menu>
+            </div>
         </div>
     )
 }

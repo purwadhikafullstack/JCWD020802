@@ -6,11 +6,11 @@ import {
   CardBody,
 } from "@material-tailwind/react";
 import { useState } from 'react'
-import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
+import { Axios } from "../../lib/api";
 
 YupPassword(Yup)
 
@@ -39,7 +39,7 @@ export function RegisterUser() {
 
     const handleSubmit = async (data) => {
         try {
-            await axios.post("http://localhost:2000/users/register", data)
+            await Axios.post("users/register", data)
             alert("Register Success")
         } catch (error) {
             console.log(error);

@@ -8,11 +8,9 @@ import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import Logo from "../../assets/Logo with name.png";
 import { LoginRegisterButttons } from "./subComponents/loginRegisterButton";
-import { MobileLoginRegisterButttons } from "./mobileSubComponents/mobileLoginRegisterButtons";
 import { Search } from "./subComponents/search";
-import { NavList } from "./subComponents/navList";
+import { NavList } from "./subComponents/navListButton";
 import { CustomerNavButton } from "./subComponents/customerNavButton";
-import { MobileCustomerButtons } from "./mobileSubComponents/mobileCustomerButton";
  
 export function NavBar() {
   const token = localStorage.getItem("token")
@@ -30,33 +28,39 @@ export function NavBar() {
     <Navbar className="sticky top-0 z-10 h-max max-w-full rounded-none px-8 py-4">
       <div className="flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-full">
-          <img src={Logo} alt="nature image" className="h-10" />
+          <a href="/">
+            <img src={Logo} alt="nature image" className="h-10" />
+          </a>
           <div className="relative w-full mx-5 hidden lg:block">
             <Search />
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <NavList />
+        <div className="flex items-center">
+          <div className="mr-4 hidden lg:block">
+            <NavList />
+          </div>
           <IconButton
             variant="text"
-            className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+            className="mx-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenSearch(!openSearch)}
-          >
+            >
             <FaSearch fontSize={"20px"} />
           </IconButton>
+          { 
+            token ? <CustomerNavButton /> : 
+            <div className="hidden lg:flex">
+              <LoginRegisterButttons /> 
+            </div>
+          }
           <IconButton
             variant="text"
-            className="ml-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+            className="h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenNav(!openNav)}
           >
             {openNav ? <FiX fontSize={"20px"} /> : <FiMenu fontSize={"20px"} />}
           </IconButton>
-          { token ? 
-            <CustomerNavButton /> :
-            <LoginRegisterButttons />
-          }
         </div>
       </div>
       <MobileNav open={openSearch}>
@@ -65,10 +69,10 @@ export function NavBar() {
         </div>
       </MobileNav>
       <MobileNav open={openNav}>
-        { token ? 
-          <MobileCustomerButtons list={<NavList />}/> :
-          <MobileLoginRegisterButttons list={<NavList />}/>
-        }
+          <div className="mt-5">
+            <NavList />
+            <LoginRegisterButttons />
+        </div>
       </MobileNav>
     </Navbar>
   );

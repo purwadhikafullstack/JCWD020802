@@ -7,13 +7,13 @@ import {
   Checkbox,
 } from "@material-tailwind/react";
 import { useState } from 'react'
-import axios from "axios";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { useDispatch } from "react-redux";
 import { setData } from "../../redux/userSlice";
+import { Axios } from "../../lib/api";
 
 YupPassword(Yup)
 
@@ -35,7 +35,7 @@ export function Login() {
     
     const handleSubmit = async (data) => {
     try {
-      const response = await axios.get(`http://localhost:2000/users/login?email=${data.email}&password=${data.password}`)
+      const response = await Axios.get(`users/login?email=${data.email}&password=${data.password}`)
       if (response.data.token) {
         dispatch(setData(response.data.checkLogin));
         localStorage.setItem("token", response.data?.token);
