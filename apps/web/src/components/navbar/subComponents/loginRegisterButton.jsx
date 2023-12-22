@@ -19,7 +19,7 @@ export function LoginRegisterButttons() {
                 variant="outlined"
                 size="sm"
                 color="brown"
-                className="w-24 hidden lg:inline-block"
+                className="w-full lg:w-24"
                 onClick={handleOpenLogin}
             >
                 <span>Log In</span>
@@ -36,7 +36,7 @@ export function LoginRegisterButttons() {
                 variant="gradient"
                 size="sm"
                 color="brown"
-                className="w-24 hidden lg:inline-block"
+                className="w-full lg:w-24"
                 onClick={handleOpenRegister}
             >
                 <span>Register</span>
