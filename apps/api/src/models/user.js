@@ -40,11 +40,11 @@ export const init = (sequelize) => {
       },
       photoProfile: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       role: {
         type: DataTypes.STRING,
-        allowNull: false,
+        defaultValue: 'Customer',
       },
       isVerified: {
         type: DataTypes.BOOLEAN,
