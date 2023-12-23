@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { sampleRouter } from './routers/sample.router';
 import { userRouter } from "./routers/userRouter";
+import { cartRouter } from './routers/cartRouter';
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use('/sample', sampleRouter);
 
 // add another router here ...
 router.use('/users', userRouter)
+router.use('/cart', cartRouter)
 
 export default router;

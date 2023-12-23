@@ -8,6 +8,7 @@ import { Footer } from "./components/footer";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { Axios } from "./lib/api";
+import { setData } from "./redux/userSlice";
 
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
@@ -43,11 +44,7 @@ function App() {
       <RouterProvider router={router} />
       <Footer />
     </div>
-    <div>
-      <NavBar />
-      <RouterProvider router={router} />
-      <Footer />
-    </div>
+
   );
 }
 
