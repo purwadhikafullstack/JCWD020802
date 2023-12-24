@@ -24,7 +24,7 @@ export const add = async (req, res) => {
   const { quantity, UserId, ProductId } = req.body;
   try {
     const isExist = await Cart.findOne({
-      where: { ProductId: ProductId, isActive: true },
+      where: { UserId: UserId, ProductId: ProductId, isActive: true },
     });
 
     if (isExist) {

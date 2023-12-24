@@ -58,7 +58,7 @@ const main = async () => {
     app.use(cors());
     app.use(json());
     app.use(urlencoded({ extended: true }));
-    app.use("/public", express.static("./public"));
+    app.use('/public', express.static('./public'));
     app.use('/api', router);
 
     globalAPIErrorHandler(app);
