@@ -13,7 +13,15 @@ export const getAll = async (req, res) => {
 export const getActive = async (req) => {
   const id = req.params.id;
   try {
-    const data = await Cart.findAll({ where: { isActive: true, UserId: id } });
+    const data = await Cart.findAll({
+      where: { isActive: true, UserId: id },
+      include: [
+        {
+          model: Product,
+          attributes: ['productPrice', 'productName', 'totalStock'],
+        },
+      ],
+    });
     return data;
   } catch (error) {
     return error;
