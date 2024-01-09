@@ -11,6 +11,7 @@ import { Axios } from "./lib/api";
 import { setData } from "./redux/userSlice";
 import Cart from "./pages/cart";
 
+
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
   { path: "/products", element: <ProductPage /> },
@@ -46,7 +47,6 @@ function App() {
       <RouterProvider router={router} />
       <Footer />
     </div>
-
   );
 }
 
