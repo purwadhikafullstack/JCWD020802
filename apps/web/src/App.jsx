@@ -8,12 +8,16 @@ import { Footer } from "./components/footer";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { Axios } from "./lib/api";
+import { setData } from "./redux/userSlice";
+import Cart from "./pages/cart";
+
 
 const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
   { path: "/products", element: <ProductPage /> },
   { path: "/categories", element: <CategoryPage /> },
-  { path: "/about-us", element: <AboutUs /> },     
+  { path: "/about-us", element: <AboutUs /> },
+  { path: "/cart", element: <Cart /> },        
 ])
 
 function App() {
@@ -38,11 +42,6 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <NavBar />
-      <RouterProvider router={router} />
-      <Footer />
-    </div>
     <div>
       <NavBar />
       <RouterProvider router={router} />
