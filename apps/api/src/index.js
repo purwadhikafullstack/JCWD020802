@@ -1,5 +1,4 @@
 import express, { json, Express, urlencoded } from 'express';
-import express, { json, Express, urlencoded } from 'express';
 import cors from 'cors';
 import { join } from 'path';
 import { NODE_ENV, PORT } from './config';
@@ -53,9 +52,6 @@ const globalAPIErrorHandler = (app) => {
 const main = async () => {
   try {
     await DB.initialize();
- const main = async () => {
-  try {
-    await DB.initialize();
 
     const app = express();
     app.use(cors());
@@ -68,21 +64,7 @@ const main = async () => {
     serveWebProjectBuildResult(app);
 
     // await DB.sequelize.sync({ alter: true });
-    globalAPIErrorHandler(app);
-    serveWebProjectBuildResult(app);
 
-    // await DB.sequelize.sync({ alter: true });
-
-    app.listen(PORT, (err) => {
-      if (err) {
-        console.log(`ERROR: ${err}`);
-      } else {
-        console.log(`  ➜  [API] Local:   http://localhost:${PORT}/`);
-      }
-    });
-  } catch (error) {
-    console.error('Error during initialization:', error);
-  }
     app.listen(PORT, (err) => {
       if (err) {
         console.log(`ERROR: ${err}`);

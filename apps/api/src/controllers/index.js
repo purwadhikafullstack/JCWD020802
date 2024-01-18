@@ -1,5 +1,7 @@
-const userController = require("./userController");
+import userController from "./userController";
+import editController from "./editController";
 
 module.exports = {
-  userController
+  userController,
+  editController
 };

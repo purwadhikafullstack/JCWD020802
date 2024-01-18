@@ -7,10 +7,11 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import Logo from "../../assets/Logo with name.png";
-import { LoginRegisterButttons } from "./subComponents/loginRegisterButton";
 import { Search } from "./subComponents/search";
 import { NavList } from "./subComponents/navListButton";
 import { CustomerNavButton } from "./subComponents/customerNavButton";
+import { Login } from "./login/login";
+import { RegisterEmail } from "./register/registerEmail";
  
 export function NavBar() {
   const token = localStorage.getItem("token")
@@ -50,7 +51,10 @@ export function NavBar() {
           { 
             token ? <CustomerNavButton /> : 
             <div className="hidden lg:flex">
-              <LoginRegisterButttons /> 
+              <div className="flex items-center gap-x-1">
+                <Login />
+                <RegisterEmail />
+              </div>
             </div>
           }
           <IconButton
@@ -71,7 +75,10 @@ export function NavBar() {
       <MobileNav open={openNav}>
           <div className="mt-5">
             <NavList />
-            <LoginRegisterButttons />
+            <div className="flex flex-col items-center gap-y-1">
+              <Login />
+              <RegisterEmail />
+            </div>
         </div>
       </MobileNav>
     </Navbar>

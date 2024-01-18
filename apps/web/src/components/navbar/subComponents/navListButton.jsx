@@ -1,5 +1,5 @@
 import { Button, Typography } from "@material-tailwind/react"
-import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 export function NavList() {
     const buttonList = [
