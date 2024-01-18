@@ -19,6 +19,7 @@ export const init = (sequelize) => {
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        defaultValue : 1
       },
       isActive: {
         type: DataTypes.BOOLEAN,
