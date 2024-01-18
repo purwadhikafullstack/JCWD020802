@@ -3,8 +3,8 @@ import {
     Button,
     Dialog
 } from "@material-tailwind/react";
-import { RegisterUser } from "../registerUser";
-import { Login } from "../login";
+import { Login } from "../login/login";
+import { RegisterEmail } from "../registerEmail";
 
 export function LoginRegisterButttons() {
     const [openLogin, setOpenLogin] = useState(false);
@@ -47,7 +47,7 @@ export function LoginRegisterButttons() {
                 handler={handleOpenRegister}
                 className="bg-transparent shadow-none"
             >
-                <RegisterUser />
+                <RegisterEmail />
             </Dialog>
         </div>
     )

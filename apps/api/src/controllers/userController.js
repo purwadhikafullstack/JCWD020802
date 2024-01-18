@@ -1,4 +1,3 @@
-import Sample from '../models/sample.model';
 import User from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -8,7 +7,6 @@ import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
 
 export const getAll = async (req, res) => {
-    // return await User.findAll()
     try {
         const result = await User.findAll();
         res.status(200).send(result);
@@ -46,7 +44,7 @@ export const loginUser = async (req, res) => {
         }
 
         const payload = { id: checkUser.id}
-        const token = jwt.sign(payload, 'District_Kayu')
+        const token = jwt.sign(payload, 'DistrictKayu')
 
         res.status(200).send({
             token,
@@ -74,47 +72,35 @@ export const keepLogin = async (req, res) => {
     }
 };
 
-export const registerUser = async (req, res) => {
+export const sendRegisterEmail = async (req, res) => {
     try {
-        const { fullname, gender, username, email, password } = req.body
+        const { email } = req.body
 
         const checkUser = await User.findOne({
-            where: { [Op.or]: [ {username}, {email} ] }
+            where: { email }
         })
 
-        const salt = await bcrypt.genSalt(10)
-        const hashPassword = await bcrypt.hash(password, salt)
-
         if (checkUser == null) {
-            const result = await User.create({
-                fullname,
-                gender,
-                username,
-                email,
-                password: hashPassword
-            });
+            const result = await User.create({ email });
+            const payload = { id: result.id }
 
-            // const payload = {
-            //     id: result.id
-            // }
+            const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
 
-            // const token = jwt.sign(payload, process.env.MYSQL_PASSWORD)
+            const data = fs.readFileSync('./verifyEmail.html', 'utf-8')
+            const tempCompile = await handlebars.compile(data)
+            const tempResult = tempCompile({ email: email, link: `http://localhost:5173/register-user/${token}` })
 
-            // const data = fs.readFileSync('./template.html', 'utf-8')
-            // const tempCompile = await handlebars.compile(data)
-            // const tempResult = tempCompile({ username: username, link: `http://localhost:3000/verify/${token}` })
+            await transporter.sendMail({
+                from: process.env.GMAIL_EMAIL,
+                to: email,
+                subject: 'Email Confirmation',
+                html: tempResult
+            })
 
-            // await transporter.sendMail({
-            //     from: 'altairlink26@gmail.com',
-            //     to: email,
-            //     subject: 'Email Confirmation',
-            //     html: tempResult
-            // })
-
-            return res.status(200).send({status: "Register Success"});
+            return res.status(200).send({status: "Email Sent!"});
         } else {
             return res.status(400).send({
-                message: 'username or email has been used'
+                message: 'Email already exist!'
             });
         }
     } catch (error) {
@@ -123,54 +109,71 @@ export const registerUser = async (req, res) => {
     }
 };
 
-// export const checkEmail = async (req, res) => {
-//     try {
-//         const { email } = req.body
-//         const checkUser = await User.findOne({
-//             where: { email }
-//         })
+export const registerGoogleUser = async (req, res) => {
+    try {
+        const { fullname, email } = req.query
 
-//         console.log(checkUser);
+        const checkUser = await User.findOne({
+            where: { email }
+        })
 
-//         if (checkUser != null) {
-//             // const payload = {
-//             //     id: checkUser.id
-//             // }
-//             // const token = jwt.sign(payload, process.env.TOKEN_KEY)
+        if (checkUser == null) {
+            await User.create({
+                fullname, 
+                email,
+                isVerified: true,
+                useProvider: true
+            });
+            return res.status(200).send({status: "Register Success"});
+        } else {
+            return res.status(400).send({
+                message: 'Email already registered'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "Failed Register"});
+    }
+};
 
-//             const data = fs.readFileSync('./resetPasswordMail.html', 'utf-8')
-//             const tempCompile = await handlebars.compile(data)
-//             const tempResult = tempCompile({ email: email, link: `http://localhost:2000/reset-password/${email}` })
+export const registerUser = async (req, res) => {
+    try {
+        const { fullname, gender, password } = req.body
 
-//             await transporter.sendMail({
-//                 from: 'altairlink26@gmail.com',
-//                 to: email,
-//                 subject: 'Email Confirmation',
-//                 html: tempResult
-//             })
-//             return res.status(200).send('Email has been Verified')
-//         }
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(password, salt)
 
-//         return res.status(400).send('Email is not registered')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// };
+        await User.update({ 
+            fullname,
+            gender,
+            password: hashPassword,
+            isVerified: true
+        },{
+            where: { id: req.user.id }
+        })
 
-// export const verifyUser = async (req, res) => {
-//     try {
-//         await User.update({ isVerified: true }, 
-//         {
-//             where: { id: req.user.id }
-//         })
+        return res.status(200).send({status: "Email has been verified & register success"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "Failed Register"});
+    }
+};
 
-//         res.status(200).send('Account has been Verified')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// };
+export const checkEmail = async (req, res) => {
+    try {
+        const { email } = req.query
+        const result = await User.findOne({ where: { email } });
+
+        if (result != null) {
+            return res.status(200).send(result);
+        } else {
+            return res.status(400).send({ message: 'Email not found!' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
 
 // export const resetPassword = async (req, res) => {
 //     try {

@@ -1,10 +1,10 @@
-import { Avatar, Button, IconButton, Menu, MenuHandler, MenuItem, MenuList, MobileNav, Typography } from "@material-tailwind/react";
+import { Avatar, IconButton, Menu, MenuHandler, MenuItem, MenuList, MobileNav, Typography } from "@material-tailwind/react";
 import { useState } from "react";
-import { FaExchangeAlt, FaSignOutAlt } from "react-icons/fa";
+import { FaExchangeAlt } from "react-icons/fa";
 import { FaBell, FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
-import { HiChevronDown } from "react-icons/hi";
 import { FiLogOut } from "react-icons/fi";
 import { useSelector } from "react-redux";
+import NullPhotoProfile from "../../../assets/null-profile-picture.png";
 
 export function CustomerNavButton() {
     const user = useSelector((state) => state.user.value);
@@ -19,54 +19,6 @@ export function CustomerNavButton() {
             console.log(error);
         }
     };
-
-    const customerMenuItems = [
-        {
-            label: "My Profile",
-            icon: <FaUser />,
-            handle: closeMenu
-        },
-        {
-            label: "Transaction",
-            icon: <FaExchangeAlt />,
-            handle: closeMenu
-        },
-        {
-            label: "Log Out",
-            icon: <FaSignOutAlt color="red" />,
-            handle: handleLogOut
-        },
-    ];
-
-    const customerMenu = (
-        <MenuList className="p-1 hidden lg:flex lg:flex-col">
-            {customerMenuItems.map((item, key) => {
-            const isLastItem = key === customerMenuItems.length - 1;
-            return (
-                <MenuItem
-                key={item.label}
-                onClick={item.handle}
-                //   href={}
-                className={`flex items-center gap-2 rounded ${
-                    isLastItem
-                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                    : ""
-                }`}
-                >
-                {item.icon}
-                <Typography
-                    as="span"
-                    variant="small"
-                    className="font-normal"
-                    color={isLastItem ? "red" : "inherit"}
-                >
-                    {item.label}
-                </Typography>
-                </MenuItem>
-            );
-            })}
-        </MenuList>
-    );
 
     const customerIconButtons = [
         {
@@ -95,54 +47,60 @@ export function CustomerNavButton() {
         </div>
     )
 
-    const mobileCustomerMenuItems = [
+    const customerMenuItems = [
         {
             label: "My Profile",
             icon: <FaUser />,
+            path: '/my-profile'
         },
         {
             label: "Transaction",
             icon: <FaExchangeAlt />,
+            path: '/transaction'
         },
         {
             label: "Cart",
             icon: <FaCartShopping />,
+            path: '/cart'
         },
         {
             label: "Wishlist",
             icon: <FaHeart />,
+            path: '/wishlist'
         },
         {
             label: "Log Out",
             icon: <FiLogOut color="red" />,
+            path: ''
         },
     ];
 
-    const mobileCustomerMenu = (
-        <MenuList className="p-1 flex flex-col lg:hidden">
-            {mobileCustomerMenuItems.map((item, key) => {
-            const isLastItem = key === mobileCustomerMenuItems.length - 1;
+    const customerMenu = (
+        <MenuList className="p-1 flex flex-col">
+            {customerMenuItems.map((item, key) => {
+            const isLastItem = key === customerMenuItems.length - 1;
             return (
-                <MenuItem
-                key={item.label}
-                onClick={item.handle}
-                //   href={}
-                className={`flex items-center gap-2 rounded ${
-                    isLastItem
-                    ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                    : ""
-                }`}
-                >
-                {item.icon}
-                <Typography
-                    as="span"
-                    variant="small"
-                    className="font-normal"
-                    color={isLastItem ? "red" : "inherit"}
-                >
-                    {item.label}
-                </Typography>
-                </MenuItem>
+                <a href={item.path}>
+                    <MenuItem
+                        key={item.label}
+                        onClick={ isLastItem ? handleLogOut : ""}
+                        className={`flex items-center gap-2 rounded ${
+                            isLastItem
+                            ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                            : ""
+                        }`}
+                    >
+                        {item.icon}
+                        <Typography
+                            as="span"
+                            variant="small"
+                            className="font-normal"
+                            color={isLastItem ? "red" : "inherit"}
+                        >
+                            {item.label}
+                        </Typography>
+                    </MenuItem>
+                </a>
             );
             })}
         </MenuList>
@@ -159,14 +117,15 @@ export function CustomerNavButton() {
                 </div>
                 <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
                     <MenuHandler>
-                        <div className="flex items-center justify-center ml-2">
-                            <Avatar size="sm" src="https://docs.material-tailwind.com/img/face-2.jpg" alt="avatar" className="mx-6 lg:mr-10" />
+                        <div className="flex items-center justify-center">
+                            {
+                                user.photoProfile == null ?
+                                <Avatar size="sm" src={NullPhotoProfile} alt="photo profile" className="mx-6" /> :
+                                <Avatar size="sm" src={`http://localhost:8000/${user.photoProfile}`} alt="avatar" className="mx-6" />
+                            }
                         </div>
                     </MenuHandler>
                     {customerMenu}
-                    <MobileNav>
-                        {mobileCustomerMenu}
-                    </MobileNav>
                 </Menu>
             </div>
         </div>
