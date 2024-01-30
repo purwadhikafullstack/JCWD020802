@@ -8,16 +8,9 @@ module.exports = {
       },
 
       filename: (req, file, cb) => {
-        cb(
-          null,
-          "PIMG" +
-            "-" +
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1000000) +
-            "." +
-            file.mimetype.split("/")[1]
-        );
+        const userId = req.user.id
+        const filename = `PIMG-User${userId}.${file.mimetype.split("/")[1]}`
+        cb(null, filename);
       },
     });
     const fileFilter = (req, file, cb) => {

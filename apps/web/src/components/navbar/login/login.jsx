@@ -17,8 +17,7 @@ import { setData } from "../../../redux/userSlice";
 import { Axios } from "../../../lib/api";
 import { LoginGoogle } from "./loginGoogle";
 import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { ClipLoader } from "react-spinners";
 
 YupPassword(Yup)
@@ -56,7 +55,7 @@ export function Login() {
                 toast.error('Account not found!')
             }
         } catch (error) {
-            console.log(error);
+            handleOpenLogin()
             toast.error('Login Failed!')
         } finally {
             setIsLoading(false)
