@@ -1,7 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
@@ -15,6 +14,18 @@ export const getAll = async (req, res) => {
         res.status(400).send({ message: error.message });
     }
 };
+
+export const getById = async (req, res) => {
+    try {
+        const result = await User.findOne({
+            where: { id: req.user.id } 
+        })
+        res.status(200).send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
 
 export const loginUser = async (req, res) => {
     try {
@@ -83,10 +94,8 @@ export const sendRegisterEmail = async (req, res) => {
         if (checkUser == null) {
             const result = await User.create({ email });
             const payload = { id: result.id }
-
             const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-
-            const data = fs.readFileSync('./verifyEmail.html', 'utf-8')
+            const data = fs.readFileSync('./verifyRegisterEmail.html', 'utf-8')
             const tempCompile = await handlebars.compile(data)
             const tempResult = tempCompile({ email: email, link: `http://localhost:5173/register-user/${token}` })
 
@@ -201,39 +210,3 @@ export const checkEmail = async (req, res) => {
 //         res.status(400).send({ error: error.message })
 //     }
 // };
-
-// export const changePassword = async (req, res) => {
-//     try {
-//         const { oldPassword, newPassword ,newPasswordConfirmation } = req.body
-//         const findUser = await User.findOne({
-//             where: { id: req.user.id }
-//         })
-      
-//         const isValidOldPassword = await bcrypt.compare(oldPassword, findUser.password)
-
-//         if (!isValidOldPassword) {
-//             return res.status(400).send({ message: 'Incorrect old password!' })
-//         }
-
-//         if (oldPassword == newPassword) {
-//             return res.status(400).send({ message: 'New password cannot be the same as the old password' })
-//         }
-
-//         if (newPassword !== newPasswordConfirmation) {
-//             return res.status(400).send({ message: 'New password must match!' })
-//         }
-
-//         const salt = await bcrypt.genSalt(10)
-//         const hashPassword = await bcrypt.hash(newPasswordConfirmation, salt)
-
-//         await User.update(
-//             { password: hashPassword },
-//             { where: { id: req.user.id } }
-//         )
-
-//         return res.status(200).send('Password successfully changed!')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// }

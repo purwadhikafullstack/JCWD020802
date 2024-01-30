@@ -27,7 +27,7 @@ export const init = (sequelize) => {
         allowNull: true,
       },
       birthdate: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.STRING,
         allowNull: true,
       },
       email: {

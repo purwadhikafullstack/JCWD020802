@@ -20,6 +20,10 @@ export const init = (sequelize) => {
       city_name: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
       }
     },
     {

@@ -30,7 +30,7 @@ export function NavBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-full">
           <a href="/">
-            <img src={Logo} alt="nature image" className="h-10" />
+            <img src={Logo} alt="logo" className="h-10" />
           </a>
           <div className="relative w-full mx-5 hidden lg:block">
             <Search />
@@ -45,7 +45,7 @@ export function NavBar() {
             className="mx-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenSearch(!openSearch)}
-            >
+          >
             <FaSearch fontSize={"20px"} />
           </IconButton>
           { 
@@ -59,7 +59,7 @@ export function NavBar() {
           }
           <IconButton
             variant="text"
-            className="h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+            className="h-6 w-6 ml-2 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenNav(!openNav)}
           >
@@ -75,10 +75,14 @@ export function NavBar() {
       <MobileNav open={openNav}>
           <div className="mt-5">
             <NavList />
-            <div className="flex flex-col items-center gap-y-1">
-              <Login />
-              <RegisterEmail />
-            </div>
+            {
+              token ?
+              '' :
+              <div className="flex flex-col items-center gap-y-1">
+                <Login />
+                <RegisterEmail />
+              </div>
+            }
         </div>
       </MobileNav>
     </Navbar>

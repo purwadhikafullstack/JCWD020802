@@ -1,4 +1,4 @@
-import { Avatar, IconButton, Menu, MenuHandler, MenuItem, MenuList, MobileNav, Typography } from "@material-tailwind/react";
+import { Avatar, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
 import { useState } from "react";
 import { FaExchangeAlt } from "react-icons/fa";
 import { FaBell, FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
@@ -51,7 +51,7 @@ export function CustomerNavButton() {
         {
             label: "My Profile",
             icon: <FaUser />,
-            path: '/my-profile'
+            path: '/dashboard-customer'
         },
         {
             label: "Transaction",
@@ -119,7 +119,7 @@ export function CustomerNavButton() {
                     <MenuHandler>
                         <div className="flex items-center justify-center">
                             {
-                                user.photoProfile == null ?
+                                user.photoProfile == null || user.photoProfile == '' ?
                                 <Avatar size="sm" src={NullPhotoProfile} alt="photo profile" className="mx-6" /> :
                                 <Avatar size="sm" src={`http://localhost:8000/${user.photoProfile}`} alt="avatar" className="mx-6" />
                             }
