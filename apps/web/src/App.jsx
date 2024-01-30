@@ -8,7 +8,6 @@ import { Footer } from "./components/footer";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Axios } from "./lib/api";
-import { MyProfile } from "./components/myProfile";
 import { setData } from "./redux/userSlice";
 import { Required } from "./components/required";
 import { RegisterUserData } from "./components/navbar/register/registerUserData";
