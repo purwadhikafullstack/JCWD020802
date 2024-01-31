@@ -41,10 +41,9 @@ export function Login() {
                 dispatch(setData(response.data));
                 localStorage.setItem("token", response.data?.token);
                 handleOpenLogin()
-                if (user.role == 'Super Admin' || user.role == 'Warehouse Admin') {
+                const userRole = response.data?.result.role
+                if (userRole == 'Super Admin' || userRole == 'Warehouse Admin') {
                     window.location.href = '/dashboard-admin/profile';
-                } else {
-                    window.location.reload()
                 }
                 toast.success('Login Success!')
             } else {
