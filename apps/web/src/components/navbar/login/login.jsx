@@ -1,24 +1,18 @@
-import {
-  Card,
-  Input,
-  Button,
-  Typography,
-  CardBody,
-  Checkbox,
-  IconButton,
-  Dialog,
-} from "@material-tailwind/react";
+import { Card, Button, Typography, CardBody, Checkbox, Dialog } from "@material-tailwind/react";
 import { useState } from 'react'
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
-import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { setData } from "../../../redux/userSlice";
 import { Axios } from "../../../lib/api";
 import { LoginGoogle } from "./loginGoogle";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
-import { ClipLoader } from "react-spinners";
+import { FormEmail } from "../../form/formEmail";
+import { FormPassword } from "../../form/formPassword";
+import { SubmitButton } from "../../form/submitButton";
+import { ResendEmail } from "./resendEmail";
+import { ForgotPassword } from "./forgotPassword";
 
 YupPassword(Yup)
 
@@ -32,14 +26,12 @@ const LoginSchema = Yup.object().shape({
 })
  
 export function Login() {
+    const user = useSelector((state) => state.user.value);
     const [openLogin, setOpenLogin] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     const dispatch = useDispatch()
 
     const handleOpenLogin = () => setOpenLogin((cur) => !cur)
-    const handleOpen = () => setOpen((cur) => !cur)
     
     const handleSubmit = async (data) => {
         try {
@@ -49,14 +41,27 @@ export function Login() {
                 dispatch(setData(response.data));
                 localStorage.setItem("token", response.data?.token);
                 handleOpenLogin()
+                if (user.role == 'Super Admin' || user.role == 'Warehouse Admin') {
+                    window.location.href = '/dashboard-admin/profile';
+                } else {
+                    window.location.reload()
+                }
                 toast.success('Login Success!')
-                window.location.reload()
             } else {
                 toast.error('Account not found!')
             }
         } catch (error) {
             handleOpenLogin()
-            toast.error('Login Failed!')
+            if (error.response.status == 400) {
+                toast.error('User not found! Please check your email!')
+            } else if (error.response.status == 401) {
+                toast.error('Your account is still not verified!')
+                toast.error('Please check your verification email in your mail or resend verification email!')
+            } else if (error.response.status == 402) {
+                toast.error('Incorrect Password!')
+            } else {
+                toast.error('Login Failed! Please try again!')
+            }
         } finally {
             setIsLoading(false)
         }
@@ -67,14 +72,14 @@ export function Login() {
             <Button
                 variant="outlined"
                 size="sm"
-                color="brown"
+                color="green"
                 className="w-full"
                 onClick={handleOpenLogin}
             >
                 <span>Log In</span>
             </Button>
             <Dialog
-                size="sm"
+                size="xs"
                 open={openLogin}
                 handler={handleOpenLogin}
                 className="bg-transparent shadow-none"
@@ -84,9 +89,15 @@ export function Login() {
                         <Typography variant="h4" color="blue-gray">
                             Log In
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-center">
                             Enter your email and password to Log In.
                         </Typography>
+                        <div className="mt-1 flex items-center justify-center">
+                            <Typography color="gray" className="font-normal text-xs">
+                                Email still not verified?
+                            </Typography>
+                            <ResendEmail handleOpenLogin={handleOpenLogin} />
+                        </div>
                         <Formik
                             initialValues={{
                                 email: '',
@@ -98,82 +109,22 @@ export function Login() {
                                 action.resetForm()
                             }}
                         >
-                            <Form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
+                            <Form className="mt-8 w-full">
                                 <div className="mb-1 flex flex-col gap-6">
-                                    <div className="mb-1 flex flex-col">
-                                        <Typography variant="h6" color="blue-gray" className="mb-2">
-                                            Email
-                                        </Typography>
-                                        <Field
-                                            as={Input}
-                                            name="email"
-                                            type="email"
-                                            placeholder="name@mail.com"
-                                            className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                            labelProps={{
-                                                className: "before:content-none after:content-none",
-                                            }}
-                                        />
-                                        <ErrorMessage
-                                            component="FormControl"
-                                            name="email"
-                                            style={{ color: "red"}}
-                                        />
-                                    </div>
-                                    <div className="mb-1 flex flex-col">
-                                        <Typography variant="h6" color="blue-gray" className="mb-2">
-                                            Password
-                                        </Typography>
-                                        <div className="flex">
-                                            <Field
-                                                as={Input}
-                                                name="password"
-                                                type={showPassword ? 'text' : 'password'}
-                                                placeholder="********"
-                                                className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                                labelProps={{
-                                                    className: "before:content-none after:content-none",
-                                                }}
-                                            />
-                                            <IconButton variant="text" className="h-10 ml-1 flex items-center justify-center" onClick={() => setShowPassword((showPassword) => !showPassword)}>
-                                                {showPassword ? <BiSolidShow fontSize={"30px"}/> : <BiSolidHide fontSize={"30px"}/>}
-                                            </IconButton>
-                                        </div>
-                                        <ErrorMessage
-                                            component="FormControl"
-                                            name="password"
-                                            style={{ color: "red"}}
-                                        />
-                                    </div>
+                                    <FormEmail />
+                                    <FormPassword label={"Password"} keyName={"password"} />
                                     <div className="-ml-2.5 -mt-3">
                                         <Checkbox label="Remember Me" />
                                     </div>
-                                    <Button
-                                        type='submit'
-                                        color='green'
-                                        size="lg"
-                                        disabled={isLoading}
-                                        className="mt-2" 
-                                        fullWidth
-                                    >
-                                        {
-                                            isLoading ?
-                                            <ClipLoader size={20} color={"#fff"} loading={isLoading} /> :
-                                            "Log In"
-                                        }
-                                    </Button>
-                                    <Typography
-                                        as="a"
-                                        href="#forgot-password"
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="ml-1 font-bold"
-                                        onClick={handleOpen}
-                                    >
-                                        Forgot password?
-                                    </Typography>
+                                    <SubmitButton isLoading={isLoading} buttonName={"Log In"} />
                                 </div>
-                                <LoginGoogle />
+                                <ForgotPassword handleOpenLogin={handleOpenLogin} />
+                                <div class="relative flex py-5 items-center">
+                                    <div class="flex-grow border-t border-gray-400"></div>
+                                    <span class="flex-shrink mx-4">OR</span>
+                                    <div class="flex-grow border-t border-gray-400"></div>
+                                </div>
+                                <LoginGoogle handleOpenLogin={handleOpenLogin} />
                             </Form>
                         </Formik>
                     </CardBody>

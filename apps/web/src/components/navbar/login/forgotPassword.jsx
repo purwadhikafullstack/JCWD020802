@@ -1,10 +1,9 @@
-import { Card, Button, Typography, CardBody, Dialog } from "@material-tailwind/react";
+import { Card, Typography, CardBody, Dialog, Button } from "@material-tailwind/react";
 import { useState } from 'react'
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Axios } from "../../../lib/api";
 import { toast } from 'react-toastify';
-import { RegisterGoogle } from "./registerGoogleEmail";
 import { FormEmail } from "../../form/formEmail";
 import { SubmitButton } from "../../form/submitButton";
 
@@ -14,24 +13,29 @@ const SendEmailSchema = Yup.object().shape({
         .required("Email is required")
 })
  
-export function RegisterEmail() {
-    const [openRegister, setOpenRegister] = useState(false);
+export function ForgotPassword({ handleOpenLogin }) {
+    const [openEmail, setOpenEmail] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleOpenRegister = () => setOpenRegister((cur) => !cur);
+    const handleOpenEmail = () => {
+        setOpenEmail((cur) => !cur);
+    }
 
     const handleSubmit = async (data) => {
         try {
             setIsLoading(true)
-            await Axios.post("users/register-email", data);
-            handleOpenRegister()
-            toast.success('Email has been sent. Please check your email to verify and continue the registration process.');
+            await Axios.post("edits/send-reset-password-email", data);
+            handleOpenEmail()
+            handleOpenLogin()
+            toast.success('Email has been sent. Please check your email to continue reset password!');
         } catch (error) {
-            handleOpenRegister()
+            handleOpenEmail()
+            handleOpenLogin()
+            console.log(error);
             if (error.response.status == 401) {
-                toast.error('Email is already exist!');
+                toast.error('Email is not registered!');
             } else {
-                toast.error('Failed to register. Please try again.')
+                toast.error('Failed to send. Please try again.')
             }
         } finally {
             setIsLoading(false)
@@ -39,28 +43,25 @@ export function RegisterEmail() {
     };
 
     return (
-        <div className="w-full lg:w-24">
-            <Button
-                size="sm"
-                color="green"
-                className="w-full bg-green-600 hover:bg-green-300"
-                onClick={handleOpenRegister}
-            >
-                <span>Register</span>
+        <div className="w-fit">
+            <Button variant="text" size="sm" className="w-fit" onClick={handleOpenEmail}>
+                <Typography color="blue-gray" className="font-bold text-xs text-left">
+                    Forgot password?
+                </Typography>
             </Button>
             <Dialog
                 size="xs"
-                open={openRegister}
-                handler={handleOpenRegister}
+                open={openEmail}
+                handler={handleOpenEmail}
                 className="bg-transparent shadow-none"
             >
                 <Card shadow={false} className="mx-auto w-full">
                     <CardBody className="flex flex-col items-center justify-center">
-                        <Typography variant="h4" color="blue-gray">
-                            Register
+                        <Typography variant="h4" color="blue-gray" className="text-center">
+                            Send Reset Password Email
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
-                            Nice to meet you! Please enter your email to register.
+                        <Typography color="gray" className="mt-1 font-normal text-center">
+                            Please enter your email to send reset password link.
                         </Typography>
                         <Formik
                             initialValues={{ email: '' }}
@@ -71,16 +72,10 @@ export function RegisterEmail() {
                             }}
                         >
                             <Form className="mt-8 w-full">
-                                <div className="flex flex-col gap-6">
+                                <div className="mb-1 flex flex-col gap-6">
                                     <FormEmail />
                                     <SubmitButton isLoading={isLoading} buttonName={"Send"} />
-                                </div>
-                                <div class="relative flex py-5 items-center">
-                                    <div class="flex-grow border-t border-gray-400"></div>
-                                    <span class="flex-shrink mx-4">OR</span>
-                                    <div class="flex-grow border-t border-gray-400"></div>
-                                </div>
-                                <RegisterGoogle handleOpenRegister={handleOpenRegister} />  
+                                </div> 
                             </Form>
                         </Formik>
                     </CardBody>

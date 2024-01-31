@@ -62,7 +62,7 @@ export function MyProfile() {
 
     useEffect(() => {
         fetchData()
-    }, [userUpdate])
+    }, [userUpdate, user])
 
     return(
         <div className="flex justify-center h-full">

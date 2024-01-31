@@ -3,7 +3,7 @@ import { Button, Card, Typography } from '@material-tailwind/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Axios } from "../../lib/api";
 
-export function NewEmailVerification () {
+export function EmailVerification () {
     const params = useParams()
     const navigate = useNavigate()
 
@@ -12,11 +12,10 @@ export function NewEmailVerification () {
             headers: { Authorization: `Bearer ${params.token}` }
         }
         try {
-            await Axios.patch("edits/verify-new-email", {}, config)
-            toast.success('New email successfully verified!');
+            await Axios.patch("edits/verify-email", {}, config)
+            toast.success('Email successfully verified!');
         } catch (error) {
-            console.log(error);
-            toast.error('Failed to verify new email!');
+            toast.error('Failed to verify email!');
         }
     }
 
@@ -33,7 +32,7 @@ export function NewEmailVerification () {
                     Email Successfully Verified!
                 </Typography>
                 <Typography variant="body1" className="mb-4">
-                    Your new email address has been successfully verified.
+                    Your email has been successfully verified.
                 </Typography>
                 <Typography variant="body1" className="mb-4">
                     Press the "Home" button to continue browsing this website.

@@ -1,6 +1,6 @@
 import { Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@material-tailwind/react"
 import { ManageAddress } from "../components/manageAddress"
-import { MyProfile } from "../components/dashboard/myProfile"
+import { MyProfile } from "../components/dashboard/profileCustomer"
 import { useState } from "react"
 
 export function DashboardCustomer () {

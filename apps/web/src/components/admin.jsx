@@ -1,13 +1,15 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
-export function Role() {
+export function Admin() {
     const user = useSelector((state) => state.user.value);
+
+    const allowedRoles = ['Super Admin', 'Warehouse Admin'];
 
     return (
         <>
             {
-                user.role == 'Super Admin' ? <Outlet /> : <Navigate to="/" />
+                allowedRoles.includes(user.role) ? <Outlet /> : <Navigate to="/" />
             }
         </>
     )

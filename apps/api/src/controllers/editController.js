@@ -5,6 +5,61 @@ import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
 
+export const sendResetPasswordEmail = async (req, res) => {
+    try {
+        const { email } = req.body
+
+        const user = await User.findOne({
+            where: { email }
+        })
+
+        if (user) {
+            const payload = { id: user.id }
+            const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
+            const data = fs.readFileSync('./resetPasswordEmail.html', 'utf-8')
+            const tempCompile = await handlebars.compile(data)
+            const tempResult = tempCompile({ email: email, link: `http://localhost:5173/reset-password/${token}` })
+    
+            await transporter.sendMail({
+                from: process.env.GMAIL_EMAIL,
+                to: email,
+                subject: 'Reset Password',
+                html: tempResult
+            })
+
+            res.status(200).send('Reset password mail sent!')
+        } else {
+            return res.status(401).send({ message: `Email is not registered!` })
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message })
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { newPassword ,newPasswordConfirmation } = req.body
+        
+        if (newPassword !== newPasswordConfirmation) {
+            return res.status(400).send({ message: 'Password must match!' })
+        }
+
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(newPasswordConfirmation, salt)
+
+        await User.update(
+            { password: hashPassword },
+            { where: { id: req.user.id } }
+        )
+
+        return res.status(200).send('Password successfully changed!')
+    } catch (error) {
+        console.log(error);
+        res.status(401).send({ error: error.message })
+    }
+}
+
 export const editFullname = async (req, res) => {
     try {
         const { fullname } = req.body
@@ -107,9 +162,9 @@ export const editEmail = async (req, res) => {
 
         const payload = { id: req.user.id }
         const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-        const data = fs.readFileSync('./verifyNewEmail.html', 'utf-8')
+        const data = fs.readFileSync('./verifyEmail.html', 'utf-8')
         const tempCompile = await handlebars.compile(data)
-        const tempResult = tempCompile({ email: email, link: `http://localhost:5173/verify-new-email/${token}` })
+        const tempResult = tempCompile({ email: email, link: `http://localhost:5173/verify-email/${token}` })
 
         await transporter.sendMail({
             from: process.env.GMAIL_EMAIL,
@@ -133,14 +188,14 @@ export const editEmail = async (req, res) => {
     }
 }
 
-export const verifyNewEmail = async (req, res) => {
+export const verifyEmail = async (req, res) => {
     try {
         await User.update(
             { isVerified: true },
             { where: { id: req.user.id } }
         )
 
-        res.status(200).send('New email successfully verified!')
+        res.status(200).send('Email successfully verified!')
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message })

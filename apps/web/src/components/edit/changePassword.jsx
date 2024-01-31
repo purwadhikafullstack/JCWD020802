@@ -56,10 +56,10 @@ export function ChangePassword({ onUserUpdate }) {
         <Card shadow={false} className="mx-auto w-full">
           <CardBody className="flex flex-col items-center justify-center">
             <Typography variant="h4" color="blue-gray">
-              Edit Birthdate
+              Change Password
             </Typography>
             <Typography color="gray" className="mt-1 font-normal">
-              Change your account birthdate
+              Change your account password
             </Typography>
             <Formik
               initialValues={{
