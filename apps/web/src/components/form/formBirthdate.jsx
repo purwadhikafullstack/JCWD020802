@@ -64,75 +64,80 @@ export function FormBirthdate ({ setFieldValue }) {
     };
 
     return (
-        <div className="flex flex-col w-full gap-5 lg:flex-row">
-            <div className="flex flex-col w-full lg:w-32">
-                <Typography variant="h6" color="blue-gray" className="mb-2">
-                    Day
-                </Typography>
-                <Field
-                    as={Select}
-                    name="day"
-                    styles={customStyles}
-                    options={days.map((day) => ({ label: day, value: day }))}
-                    onChange={(selectedOption) => {
-                        setSelectedDay(selectedOption)
-                        setFieldValue("day", selectedOption.value)
-                    }}
-                    value={selectedDay}
-                    isSearchable
-                    isClearable
-                />
-                <ErrorMessage
-                    component="FormControl"
-                    name="day"
-                    style={{ color: "red" }}
-                />
-            </div>
-            <div className="flex flex-col w-full lg:w-40">
-                <Typography variant="h6" color="blue-gray" className="mb-2">
-                    Month
-                </Typography>
-                <Field
-                    as={Select}
-                    name="month"
-                    styles={customStyles}
-                    options={months.map((month) => ({ label: month.name, value: month.name, id: month.id }))}
-                    onChange={(selectedOption) => {
-                        setSelectedMonth(selectedOption)
-                        setFieldValue("month", selectedOption.value)
-                    }}
-                    value={selectedMonth}
-                    isSearchable
-                    isClearable
-                />
-                <ErrorMessage
-                    component="FormControl"
-                    name="month"
-                    style={{ color: "red" }}
-                />
-            </div>
-            <div className="flex flex-col w-full lg:w-32">
-                <Typography variant="h6" color="blue-gray" className="mb-2">
-                    Year
-                </Typography>
-                <Field
-                    as={Select}
-                    name="year"
-                    styles={customStyles}
-                    options={years.map((year) => ({ label: year, value: year }))}
-                    onChange={(selectedOption) => {
-                        setSelectedYear(selectedOption)
-                        setFieldValue("year", selectedOption.value)
-                    }}
-                    value={selectedYear}
-                    isSearchable
-                    isClearable
-                />
-                <ErrorMessage
-                    component="FormControl"
-                    name="year"
-                    style={{ color: "red" }}
-                />
+        <div>
+            <Typography variant="h6" color="blue-gray" className="mb-1">
+                Birthdate
+            </Typography>
+            <div className="flex flex-col items-center justify-center w-full gap-5 lg:flex-row">
+                <div className="flex flex-col w-full lg:w-32">
+                    <Typography variant="h6" color="blue-gray" className="mb-2 text-sm">
+                        Day
+                    </Typography>
+                    <Field
+                        as={Select}
+                        name="day"
+                        styles={customStyles}
+                        options={days.map((day) => ({ label: day, value: day }))}
+                        onChange={(selectedOption) => {
+                            setSelectedDay(selectedOption)
+                            setFieldValue("day", selectedOption.value)
+                        }}
+                        value={selectedDay}
+                        isSearchable
+                        isClearable
+                    />
+                    <ErrorMessage
+                        component="FormControl"
+                        name="day"
+                        style={{ color: "red" }}
+                    />
+                </div>
+                <div className="flex flex-col w-full lg:w-52">
+                    <Typography variant="h6" color="blue-gray" className="mb-2 text-sm">
+                        Month
+                    </Typography>
+                    <Field
+                        as={Select}
+                        name="month"
+                        styles={customStyles}
+                        options={months.map((month) => ({ label: month.name, value: month.name, id: month.id }))}
+                        onChange={(selectedOption) => {
+                            setSelectedMonth(selectedOption)
+                            setFieldValue("month", selectedOption.value)
+                        }}
+                        value={selectedMonth}
+                        isSearchable
+                        isClearable
+                    />
+                    <ErrorMessage
+                        component="FormControl"
+                        name="month"
+                        style={{ color: "red" }}
+                    />
+                </div>
+                <div className="flex flex-col w-full lg:w-40">
+                    <Typography variant="h6" color="blue-gray" className="mb-2 text-sm">
+                        Year
+                    </Typography>
+                    <Field
+                        as={Select}
+                        name="year"
+                        styles={customStyles}
+                        options={years.map((year) => ({ label: year, value: year }))}
+                        onChange={(selectedOption) => {
+                            setSelectedYear(selectedOption)
+                            setFieldValue("year", selectedOption.value)
+                        }}
+                        value={selectedYear}
+                        isSearchable
+                        isClearable
+                    />
+                    <ErrorMessage
+                        component="FormControl"
+                        name="year"
+                        style={{ color: "red" }}
+                    />
+                </div>
             </div>
         </div>
     )

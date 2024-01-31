@@ -1,4 +1,5 @@
 import multer from "multer";
+import fs from "fs";
 
 module.exports = {
   multerUpload: () => {
@@ -9,7 +10,7 @@ module.exports = {
 
       filename: (req, file, cb) => {
         const userId = req.user.id
-        const filename = `PIMG-User${userId}.${file.mimetype.split("/")[1]}`
+        const filename = `PIMG-User${userId}-${Math.round(Math.random() * 1000000)}.${file.mimetype.split("/")[1]}`
         cb(null, filename);
       },
     });

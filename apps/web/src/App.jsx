@@ -13,19 +13,12 @@ import { Required } from "./components/required";
 import { RegisterUserData } from "./components/navbar/register/registerUserData";
 import Cart from "./pages/cart";
 import { DashboardCustomer } from "./pages/dashboardCustomer";
-import { NewEmailVerification } from "./components/edit/verifyNewEmail";
+import { EmailVerification } from "./components/edit/verifyEmail";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import "leaflet/dist/leaflet.css"
-import { Role } from "./components/role";
-import { MyProfile } from "./components/dashboard/myProfile";
-import { SideBar } from "./components/sidebar";
-import { UserLists } from "./components/dashboard/userLists";
-import { Warehouse } from "./components/dashboard/warehouse";
-import { Product } from "./components/dashboard/product";
-import { Stock } from "./components/dashboard/stock";
-import { Order } from "./components/dashboard/order";
-import { Payment } from "./components/dashboard/payment";
+import { ResetPassword } from "./components/edit/resetPassword";
+import { DashboardAdmin } from "./pages/dashboardAdmin";
 
 const router = createBrowserRouter([
   { path: '/', element: <HomePage /> },
@@ -34,23 +27,19 @@ const router = createBrowserRouter([
   { path: '/about-us', element: <AboutUs /> },
   { path: '/carts', element: <Cart /> },
   { path: '/register-user/:token', element: <RegisterUserData /> },
-  { path: '/verify-new-email/:token', element: <NewEmailVerification /> },
+  { path: '/verify-email/:token', element: <EmailVerification /> },
+  { path: '/reset-password/:token', element: <ResetPassword /> },
   {
     element: <Required />,
     children: [
       { path: '/dashboard-customer', element: <DashboardCustomer /> },
-      {
-        element: <Role />,
-        children: [
-          { path: '/dashboard-admin/profile', element: <MyProfile /> },
-          { path: '/dashboard-admin/user-lists', element: <UserLists /> },
-          { path: '/dashboard-admin/warehouse', element: <Warehouse /> },
-          { path: '/dashboard-admin/products', element: <Product /> },
-          { path: '/dashboard-admin/stocks', element: <Stock /> },
-          { path: '/dashboard-admin/orders', element: <Order /> },
-          { path: '/dashboard-admin/payments', element: <Payment /> },
-        ],
-      },
+      { path: '/dashboard-admin/profile', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/user-lists', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/warehouse', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/products', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/stocks', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/orders', element: <DashboardAdmin /> },
+      { path: '/dashboard-admin/payments', element: <DashboardAdmin /> },
     ],
   },
 ]);
@@ -81,17 +70,11 @@ function App() {
     <div>
       <ToastContainer />
       {
-        user.role == 'Super Admin' ?
-        <div className="flex gap-3">
-          <SideBar />
-          <MyProfile />
-          {/* <RouterProvider router={router} /> */}
-        </div> :
-        <div>
-          <NavBar />
-          <RouterProvider router={router} />
-        </div>
+        user.role == 'Super Admin' || user.role == 'Warehouse Admin' ?
+        '' :
+        <NavBar />
       }
+      <RouterProvider router={router} />
     </div>
   );
 }

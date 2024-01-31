@@ -10,6 +10,7 @@ export function FormEmail() {
             <Field
                 as={Input}
                 name="email"
+                placeholder="name@mail.com"
                 className=" !border-t-blue-gray-200 focus:!border-green-500"
                 labelProps={{
                     className: "before:content-none after:content-none",

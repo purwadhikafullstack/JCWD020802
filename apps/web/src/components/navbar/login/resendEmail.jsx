@@ -1,12 +1,12 @@
-import { Card, Button, Typography, CardBody, Dialog } from "@material-tailwind/react";
+import { Card, Typography, CardBody, Dialog, Button, IconButton } from "@material-tailwind/react";
 import { useState } from 'react'
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Axios } from "../../../lib/api";
 import { toast } from 'react-toastify';
-import { RegisterGoogle } from "./registerGoogleEmail";
 import { FormEmail } from "../../form/formEmail";
 import { SubmitButton } from "../../form/submitButton";
+import { IoSend } from "react-icons/io5";
 
 const SendEmailSchema = Yup.object().shape({
     email: Yup.string()
@@ -14,22 +14,28 @@ const SendEmailSchema = Yup.object().shape({
         .required("Email is required")
 })
  
-export function RegisterEmail() {
-    const [openRegister, setOpenRegister] = useState(false);
+export function ResendEmail({ handleOpenLogin }) {
+    const [openEmail, setOpenEmail] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleOpenRegister = () => setOpenRegister((cur) => !cur);
+    const handleOpenEmail = () => {
+        setOpenEmail((cur) => !cur);
+    }
 
     const handleSubmit = async (data) => {
         try {
             setIsLoading(true)
-            await Axios.post("users/register-email", data);
-            handleOpenRegister()
-            toast.success('Email has been sent. Please check your email to verify and continue the registration process.');
+            await Axios.post("users/resend-email-verification", data);
+            handleOpenEmail()
+            handleOpenLogin()
+            toast.success('Email has been sent. Please check your email to verify!');
         } catch (error) {
-            handleOpenRegister()
-            if (error.response.status == 401) {
-                toast.error('Email is already exist!');
+            handleOpenEmail()
+            handleOpenLogin()
+            if (error.response.status == 400) {
+                toast.error('Email is already verified!');
+            } else if (error.response.status == 401) {
+                toast.error('Email is not registered!');
             } else {
                 toast.error('Failed to register. Please try again.')
             }
@@ -39,28 +45,23 @@ export function RegisterEmail() {
     };
 
     return (
-        <div className="w-full lg:w-24">
-            <Button
-                size="sm"
-                color="green"
-                className="w-full bg-green-600 hover:bg-green-300"
-                onClick={handleOpenRegister}
-            >
-                <span>Register</span>
-            </Button>
+        <div className="w-fit">
+            <IconButton variant="text" size="sm" color="green" onClick={handleOpenEmail}>
+                <IoSend fontSize={"15px"}/>
+            </IconButton>
             <Dialog
                 size="xs"
-                open={openRegister}
-                handler={handleOpenRegister}
+                open={openEmail}
+                handler={handleOpenEmail}
                 className="bg-transparent shadow-none"
             >
                 <Card shadow={false} className="mx-auto w-full">
                     <CardBody className="flex flex-col items-center justify-center">
-                        <Typography variant="h4" color="blue-gray">
-                            Register
+                        <Typography variant="h4" color="blue-gray" className="text-center">
+                            Resend Email Verification
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
-                            Nice to meet you! Please enter your email to register.
+                        <Typography color="gray" className="mt-1 font-normal text-center">
+                            Please enter your email to resend email verification.
                         </Typography>
                         <Formik
                             initialValues={{ email: '' }}
@@ -71,16 +72,10 @@ export function RegisterEmail() {
                             }}
                         >
                             <Form className="mt-8 w-full">
-                                <div className="flex flex-col gap-6">
+                                <div className="mb-1 flex flex-col gap-6">
                                     <FormEmail />
                                     <SubmitButton isLoading={isLoading} buttonName={"Send"} />
-                                </div>
-                                <div class="relative flex py-5 items-center">
-                                    <div class="flex-grow border-t border-gray-400"></div>
-                                    <span class="flex-shrink mx-4">OR</span>
-                                    <div class="flex-grow border-t border-gray-400"></div>
-                                </div>
-                                <RegisterGoogle handleOpenRegister={handleOpenRegister} />  
+                                </div> 
                             </Form>
                         </Formik>
                     </CardBody>
