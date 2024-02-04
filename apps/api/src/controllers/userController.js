@@ -1,14 +1,12 @@
-import Sample from '../models/sample.model';
+import { Op } from "sequelize";
 import User from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { Op } from "sequelize";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
 
 export const getAll = async (req, res) => {
-    // return await User.findAll()
     try {
         const result = await User.findAll();
         res.status(200).send(result);
@@ -17,6 +15,19 @@ export const getAll = async (req, res) => {
         res.status(400).send({ message: error.message });
     }
 };
+
+
+export const getById = async (req, res) => {
+    try {
+        const result = await User.findOne({
+            where: { id: req.user.id } 
+        })
+        res.status(200).send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
 
 export const loginUser = async (req, res) => {
     try {
@@ -46,7 +57,7 @@ export const loginUser = async (req, res) => {
         }
 
         const payload = { id: checkUser.id}
-        const token = jwt.sign(payload, 'District_Kayu')
+        const token = jwt.sign(payload, 'DistrictKayu')
 
         res.status(200).send({
             token,
@@ -74,47 +85,33 @@ export const keepLogin = async (req, res) => {
     }
 };
 
-export const registerUser = async (req, res) => {
+export const sendRegisterEmail = async (req, res) => {
     try {
-        const { fullname, gender, username, email, password } = req.body
+        const { email } = req.body
 
         const checkUser = await User.findOne({
-            where: { [Op.or]: [ {username}, {email} ] }
+            where: { email }
         })
 
-        const salt = await bcrypt.genSalt(10)
-        const hashPassword = await bcrypt.hash(password, salt)
-
         if (checkUser == null) {
-            const result = await User.create({
-                fullname,
-                gender,
-                username,
-                email,
-                password: hashPassword
-            });
+            const result = await User.create({ email });
+            const payload = { id: result.id }
+            const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
+            const data = fs.readFileSync('./verifyRegisterEmail.html', 'utf-8')
+            const tempCompile = await handlebars.compile(data)
+            const tempResult = tempCompile({ email: email, link: `http://localhost:5173/register-user/${token}` })
 
-            // const payload = {
-            //     id: result.id
-            // }
+            await transporter.sendMail({
+                from: process.env.GMAIL_EMAIL,
+                to: email,
+                subject: 'Email Confirmation',
+                html: tempResult
+            })
 
-            // const token = jwt.sign(payload, process.env.MYSQL_PASSWORD)
-
-            // const data = fs.readFileSync('./template.html', 'utf-8')
-            // const tempCompile = await handlebars.compile(data)
-            // const tempResult = tempCompile({ username: username, link: `http://localhost:3000/verify/${token}` })
-
-            // await transporter.sendMail({
-            //     from: 'altairlink26@gmail.com',
-            //     to: email,
-            //     subject: 'Email Confirmation',
-            //     html: tempResult
-            // })
-
-            return res.status(200).send({status: "Register Success"});
+            return res.status(200).send({status: "Email Sent!"});
         } else {
             return res.status(400).send({
-                message: 'username or email has been used'
+                message: 'Email already exist!'
             });
         }
     } catch (error) {
@@ -122,6 +119,34 @@ export const registerUser = async (req, res) => {
         res.status(400).send({ message: "Failed Register"});
     }
 };
+
+export const registerGoogleUser = async (req, res) => {
+    try {
+        const { fullname, email } = req.query
+
+        const checkUser = await User.findOne({
+            where: { email }
+        })
+
+        if (checkUser == null) {
+            await User.create({
+                fullname, 
+                email,
+                isVerified: true,
+                useProvider: true
+            });
+            return res.status(200).send({status: "Register Success"});
+        } else {
+            return res.status(400).send({
+                message: 'Email already registered'
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "Failed Register"});
+    }
+};
+
 
 // export const checkEmail = async (req, res) => {
 //     try {
@@ -171,6 +196,46 @@ export const registerUser = async (req, res) => {
 //         res.status(400).send({ error: error.message })
 //     }
 // };
+
+export const registerUser = async (req, res) => {
+    try {
+        const { fullname, gender, password } = req.body
+
+        const salt = await bcrypt.genSalt(10)
+        const hashPassword = await bcrypt.hash(password, salt)
+
+        await User.update({ 
+            fullname,
+            gender,
+            password: hashPassword,
+            isVerified: true
+        },{
+            where: { id: req.user.id }
+        })
+
+        return res.status(200).send({status: "Email has been verified & register success"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: "Failed Register"});
+    }
+};
+
+export const checkEmail = async (req, res) => {
+    try {
+        const { email } = req.query
+        const result = await User.findOne({ where: { email } });
+
+        if (result != null) {
+            return res.status(200).send(result);
+        } else {
+            return res.status(400).send({ message: 'Email not found!' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
 
 // export const resetPassword = async (req, res) => {
 //     try {

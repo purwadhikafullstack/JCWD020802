@@ -10,8 +10,7 @@ export const verifyToken = (req, res, next) => {
         }
 
         token = token.split(' ')[1]
-
-        let verifiedUser = jwt.verify(token, 'District_Kayu')
+        let verifiedUser = jwt.verify(token, 'DistrictKayu')
         req.user = verifiedUser
 
         next()

@@ -7,10 +7,11 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { FiMenu, FiX } from "react-icons/fi";
 import Logo from "../../assets/Logo with name.png";
-import { LoginRegisterButttons } from "./subComponents/loginRegisterButton";
 import { Search } from "./subComponents/search";
 import { NavList } from "./subComponents/navListButton";
 import { CustomerNavButton } from "./subComponents/customerNavButton";
+import { Login } from "./login/login";
+import { RegisterEmail } from "./register/registerEmail";
  
 export function NavBar() {
   const token = localStorage.getItem("token")
@@ -29,7 +30,7 @@ export function NavBar() {
       <div className="flex items-center justify-between text-blue-gray-900">
         <div className="flex items-center w-full">
           <a href="/">
-            <img src={Logo} alt="nature image" className="h-10" />
+            <img src={Logo} alt="logo" className="h-10" />
           </a>
           <div className="relative w-full mx-5 hidden lg:block">
             <Search />
@@ -44,18 +45,21 @@ export function NavBar() {
             className="mx-auto h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenSearch(!openSearch)}
-            >
+          >
             <FaSearch fontSize={"20px"} />
           </IconButton>
           { 
             token ? <CustomerNavButton /> : 
             <div className="hidden lg:flex">
-              <LoginRegisterButttons /> 
+              <div className="flex items-center gap-x-1">
+                <Login />
+                <RegisterEmail />
+              </div>
             </div>
           }
           <IconButton
             variant="text"
-            className="h-6 w-6 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
+            className="h-6 w-6 ml-2 text-inherit hover:bg-transparent focus:bg-transparent active:bg-transparent lg:hidden"
             ripple={false}
             onClick={() => setOpenNav(!openNav)}
           >
@@ -71,7 +75,14 @@ export function NavBar() {
       <MobileNav open={openNav}>
           <div className="mt-5">
             <NavList />
-            <LoginRegisterButttons />
+            {
+              token ?
+              '' :
+              <div className="flex flex-col items-center gap-y-1">
+                <Login />
+                <RegisterEmail />
+              </div>
+            }
         </div>
       </MobileNav>
     </Navbar>
