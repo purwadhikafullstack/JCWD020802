@@ -1,24 +1,18 @@
 import { Router } from 'express';
 import {
-  getAll,
   getActive,
-  add,
   increment,
   decrement,
   remove,
+  addToCart,
+  getAllCart,
 } from '../controllers/cartController';
+import { verifyToken } from '../middleware/auth';
 
 const cartRouter = Router();
 
-cartRouter.get('/', async (req, res) => {
-  const result = await getAll();
-  res.json(result);
-});
-
-cartRouter.post('/', async (req, res) => {
-  const result = await add(req, res);
-  res.json(result);
-});
+cartRouter.get('/', verifyToken, getAllCart);
+cartRouter.post('/add', verifyToken, addToCart);
 
 cartRouter.delete('/:id', async (req, res) => {
   const result = await remove(req, res);

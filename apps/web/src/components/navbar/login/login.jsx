@@ -37,15 +37,17 @@ export function Login() {
         try {
             setIsLoading(true)
             const response = await Axios.get(`users/login?email=${data.email}&password=${data.password}`)
-            if (response.data.token) {
+            if (response.data.token || response.data.adminToken) {
                 dispatch(setData(response.data));
-                localStorage.setItem("token", response.data?.token);
-                handleOpenLogin()
-                const userRole = response.data?.result.role
-                if (userRole == 'Super Admin' || userRole == 'Warehouse Admin') {
-                    window.location.href = '/dashboard-admin/profile';
+                if (response.data.token) {
+                    localStorage.setItem("token", response.data?.token);   
+                } else if (response.data.adminToken) {
+                    localStorage.setItem("adminToken", response.data?.adminToken); 
+                    // window.location.href = '/dashboard-admin';
                 }
+                handleOpenLogin()
                 toast.success('Login Success!')
+                window.location.reload();
             } else {
                 toast.error('Account not found!')
             }

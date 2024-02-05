@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setPosition } from "../../redux/positionSlice";
 import { toast } from 'react-toastify';
 
-export function PinLocation({ isMobile }) {
+export function PinLocation() {
     const [searchLocation, setSearchLocation] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(true);
@@ -90,21 +90,21 @@ export function PinLocation({ isMobile }) {
     return (
         <>
             <div className="flex flex-col">
-                <Typography variant="h5" color="blue-gray" className="mb-3 flex justify-center text-center">
+                <Typography variant="h6" color="blue-gray" className="mb-3 flex justify-center text-center">
                     Find & determine your delivery location pinpoint
                 </Typography>
                 <div className="flex gap-2 mb-5">
                     <Input
                         type="search"
                         placeholder="Search location"
-                        className="!border !border-brown-300"
+                        className="!border !border-green-600"
                         labelProps={{ className: "hidden"}}
                         value={searchLocation}
                         onChange={(e) => {
                             setSearchLocation(e.target.value);
                             setShowSuggestions(true);
                         }}
-                        icon={ <FaSearch fontSize={"20px"} color="brown" onClick={findLocation} /> }
+                        icon={ <FaSearch fontSize={"20px"} color="green" onClick={findLocation} /> }
                     />
                 </div>
                 {showSuggestions && (
@@ -117,7 +117,7 @@ export function PinLocation({ isMobile }) {
                     </ul>
                 )}
             </div>
-            <MapContainer center={position} zoom={13} ref={mapRef} style={{ height: isMobile ? "250px" : "450px" }}>
+            <MapContainer center={position} zoom={13} ref={mapRef} style={{ height: "300px" }}>
                 <TileLayer 
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

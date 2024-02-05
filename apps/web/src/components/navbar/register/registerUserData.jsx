@@ -15,10 +15,11 @@ import { SubmitButton } from "../../form/submitButton";
 YupPassword(Yup)
 
 const RegisterSchema = Yup.object().shape({
-    fullname: Yup.string()
-        .required("Fullname is required"),
-    gender: Yup.string()
-        .required("Gender is required"),    
+    fullname: Yup.string().required("Fullname is required"),
+    gender: Yup.string().required("Gender is required"), 
+    day: Yup.string().required('Day is required'),
+    month: Yup.string().required('Month is required'),
+    year: Yup.string().required('Year is required'),   
     password: Yup.string()
         .password()
         .required("Password is required"),
@@ -38,7 +39,16 @@ export function RegisterUserData() {
         }
         try {
             setIsLoading(true)
-            await Axios.patch("users/register-user", data, config)
+            await Axios.patch(
+                "users/register-user",
+                {
+                    fullname: data.fullname,
+                    birthdate: `${data.day} ${data.month} ${data.year}`,
+                    gender: data.gender,
+                    password: data.password
+                },
+                config
+            )
             navigate("/")
             toast.success('Email has been verified & register success!');
             toast.success('Please try to login with your new account!')

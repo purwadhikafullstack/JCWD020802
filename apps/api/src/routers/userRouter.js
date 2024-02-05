@@ -10,12 +10,12 @@ import {
     getById,
     resendVerificationEmail
 } from "../controllers/userController";
-import { verifyToken } from "../middleware/auth";
+import { checkSuperAdminRole, verifyToken } from "../middleware/auth";
 import { checkLogin, checkRegisterUser, checkRegisterEmail } from "../middleware/validator";
 
 const userRouter = Router();
 
-userRouter.get("/", getAll);
+userRouter.get("/", verifyToken, checkSuperAdminRole, getAll);
 userRouter.get("/login", checkLogin, loginUser)
 userRouter.get("/keep-login", verifyToken, keepLogin)
 userRouter.get("/check-email", checkEmail)

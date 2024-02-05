@@ -1,15 +1,35 @@
-import { Avatar, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
-import { useState } from "react";
+import { Avatar, Button, Drawer, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
+import { useEffect, useState } from "react";
 import { FaExchangeAlt } from "react-icons/fa";
-import { FaBell, FaCartShopping, FaHeart, FaUser } from "react-icons/fa6";
+import { FaCartShopping, FaUser } from "react-icons/fa6";
 import { FiLogOut } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import NullPhotoProfile from "../../../assets/null-profile-picture.png";
+import { Axios } from "../../../lib/api";
+import { toast } from "react-toastify";
 
 export function CustomerNavButton() {
     const user = useSelector((state) => state.user.value);
+    const token = localStorage.getItem('token');
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const closeMenu = () => setIsMenuOpen(false)
+    const [count, setCount] =useState(null)
+
+    const handleOrderCount = async () => {
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        }
+        try {
+            const data = await Axios.get("carts/", config)
+            setCount(data.count)
+            toast.success("Successfully adding item!")
+        } catch (error) {
+            toast.error("Failed adding item!")
+        }
+    }
+
+    useEffect(() => {
+        handleOrderCount()
+    }, [])
 
     const handleLogOut = async () => {
         try {
@@ -19,33 +39,6 @@ export function CustomerNavButton() {
             console.log(error);
         }
     };
-
-    const customerIconButtons = [
-        {
-            label: "Cart",
-            icon: <FaCartShopping fontSize={'20px'} />,
-        },
-        {
-            label: "Wishlist",
-            icon: <FaHeart fontSize={'20px'} />,
-        },
-        {
-            label: "Notification",
-            icon: <FaBell fontSize={'20px'} />,
-        }
-    ];
-
-    const customerIcons = (
-        <div className="hidden lg:block">
-            <ul className="mt-2 mb-4 flex flex-col lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
-                {customerIconButtons.map((item) => (
-                    <IconButton variant="text" className="mx-1">
-                        {item.icon}
-                    </IconButton>
-                ))}
-            </ul>
-        </div>
-    )
 
     const customerMenuItems = [
         {
@@ -57,16 +50,6 @@ export function CustomerNavButton() {
             label: "Transaction",
             icon: <FaExchangeAlt />,
             path: '/transaction'
-        },
-        {
-            label: "Cart",
-            icon: <FaCartShopping />,
-            path: '/cart'
-        },
-        {
-            label: "Wishlist",
-            icon: <FaHeart />,
-            path: '/wishlist'
         },
         {
             label: "Log Out",
@@ -108,12 +91,13 @@ export function CustomerNavButton() {
     
     return (
         <div>
-            <div className="flex items-center justify-center">
-                {customerIcons}
-                <div className="ml-5 block lg:hidden">
-                    <IconButton variant="text">
-                        <FaBell fontSize={'20px'} />
-                    </IconButton>
+            <div className="flex items-center justify-center gap-2">
+                <div className="ml-5 block">
+                    <a href="/carts">
+                        <IconButton variant="text">
+                            <FaCartShopping fontSize={'20px'} />
+                        </IconButton>
+                    </a>
                 </div>
                 <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
                     <MenuHandler>

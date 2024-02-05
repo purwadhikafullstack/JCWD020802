@@ -62,6 +62,63 @@ export const getAllAddress = async (req, res) => {
     }
 }
 
+export const getAddressById = async (req, res) => {
+    try {
+        const { UserId } = req.params
+        const { page, sortBy, sortOrder, searchTerm, province, city } = req.query
+
+        const limit = 5
+        const offset = (page - 1) * limit
+
+        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+
+        const result = await Address.findAndCountAll({
+            include: [
+                {
+                    model: City,
+                    attributes: ['type', 'city_name', 'ProvinceId'],
+                    include: [
+                        {
+                            model: Province,
+                            attributes: ['province']
+                        }
+                    ]
+                }
+            ],
+            where: { 
+                isDeleted: false,
+                UserId,
+                ...(province && { '$City.Province.province$': province }),
+                ...(city && { 
+                    [Op.and]: [
+                        { '$City.type$': city.split(' ')[0] },
+                        { '$City.city_name$': city.split(' ')[1] }
+                    ]
+                }),
+                ...(searchTerm && {
+                    [Op.or]: [
+                        { label: { [Op.like]: `%${searchTerm}%` } },
+                        { address: { [Op.like]: `%${searchTerm}%` } },
+                    ],
+                }),
+            }, offset, limit, order
+        });
+
+        const totalPages = Math.ceil(result.count / limit)
+        
+        res.status(200).send({
+            totalItems: result.count,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+            addresses: result.rows
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(402).send({ message: error.message });
+    }
+};
+
 export const getByUserId = async (req, res) => {
     try {
         const { UserId } = req.params
@@ -69,7 +126,7 @@ export const getByUserId = async (req, res) => {
             include: [
                 {
                     model: City,
-                    attributes: ['city_name'],
+                    attributes: ['type', 'city_name', 'ProvinceId'],
                     include: [
                         {
                             model: Province,
@@ -122,5 +179,91 @@ export const addAddress = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
+    }
+}
+
+export const changeAddressById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { latitude, longtitude, label, CityId, address, note } = req.body
+
+        const checkAddress = await Address.findByPk(id)
+
+        if (!checkAddress) {
+            return res.status(404).send({status: "Address Not Found!"})
+        }
+
+        await Address.update({
+            latitude,
+            longtitude,
+            label,
+            CityId,
+            address,
+            note
+        }, { where: { id } }
+        )
+        return res.status(200).send({status: "Address updated successfully!"})
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
+export const deleteAddressById = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const checkAddress = await Address.findByPk(id)
+
+        if (!checkAddress) {
+            return res.status(402).send({status: "Address Not Found!"})
+        }
+
+        await Address.destroy({
+            where: [
+                { id }
+            ]
+        })
+        return res.status(200).send({status: "Address successfully deleted!"})
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
+export const changeMainAddressById = async (req, res) => {
+    try {
+        const { id } = req.params
+        const { UserId } = req.body
+
+        const findMainAddress = await Address.findOne({
+            where: [
+                { UserId },
+                { isMain: true }
+            ]
+        })
+
+        if (!findMainAddress) {
+            return res.status(402).send({status: "Address Not Found!"})
+        }
+
+        await Address.update({
+            isMain: false
+        }, { where: [
+            { UserId },
+            { isMain: true }
+        ]})
+
+        await Address.update({
+            isMain: true
+        }, { where: [
+            { id },
+            { UserId },
+            { isMain: false }
+        ]})
+
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message })
     }
 }

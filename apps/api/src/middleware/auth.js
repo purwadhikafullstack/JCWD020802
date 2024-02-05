@@ -5,7 +5,7 @@ export const verifyToken = (req, res, next) => {
         let token = req.headers.authorization
 
         if (!token) {
-            return res.status(401).send({
+            return res.status(404).send({
                 message: 'Token Empty'
             })
         }
@@ -20,4 +20,20 @@ export const verifyToken = (req, res, next) => {
         console.log(error);
         res.status(400).send({ message: error.message })
     }
+}
+
+export const checkSuperAdminRole = (req, res, next) => {
+    if (req.user.role === 'Super Admin') {
+        return next()
+    }
+
+    return res.status(401).send({ message: 'Unauthorize (Super Admin only)!' })
+}
+
+export const checkCustomerRole = (req, res, next) => {
+    if (req.user.role === 'Customer') {
+        return next()
+    }
+
+    return res.status(401).send({ message: 'Unauthorize (Super Admin only)!' })
 }

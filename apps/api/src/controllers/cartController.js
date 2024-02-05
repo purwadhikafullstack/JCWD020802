@@ -1,12 +1,15 @@
 import Cart from '../models/cart';
 import Product from '../models/product';
 
-export const getAll = async (req, res) => {
+export const getAllCart = async (req, res) => {
   try {
-    const data = await Cart.findAll();
-    return data;
+    const data = await Cart.findAndCountAll({
+      where: { isActive: true }
+    });
+    res.status(200).send(data)
   } catch (error) {
-    return error;
+    console.log(error);
+    res.status(400).send({ message: error.message });
   }
 };
 
@@ -18,7 +21,7 @@ export const getActive = async (req) => {
       include: [
         {
           model: Product,
-          attributes: ['productPrice', 'productName', 'totalStock'],
+          attributes: ['productPrice', 'productName', 'totalStock', 'productWeight'],
         },
       ],
     });
@@ -28,25 +31,31 @@ export const getActive = async (req) => {
   }
 };
 
-export const add = async (req, res) => {
-  const { quantity, UserId, ProductId } = req.body;
+export const addToCart = async (req, res) => {
   try {
+    const { quantity, UserId, ProductId } = req.body;
+
     const isExist = await Cart.findOne({
-      where: { UserId: UserId, ProductId: ProductId, isActive: true },
+      where: { 
+        UserId, 
+        ProductId,
+        isActive: true 
+      },
     });
 
     if (isExist) {
       const productAdded = 1;
-      const result = await Cart.update(
+      await Cart.update(
         { quantity: isExist.quantity + productAdded },
         { where: { id: isExist.id } },
       );
-      return result;
+    } else {
+      await Cart.create({ quantity, UserId, ProductId });
     }
-    await Cart.create({ quantity, UserId, ProductId });
     res.status(201).send({ message: 'Item added to cart', success: true });
   } catch (error) {
-    return error;
+    console.log(error);
+    res.status(400).send(error);
   }
 };
 

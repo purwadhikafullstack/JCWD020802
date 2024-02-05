@@ -1,12 +1,15 @@
 import { Typography } from "@material-tailwind/react"
 import { ErrorMessage, Field } from "formik"
 import { useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
 import Select from 'react-select';
+import { setSelectedDay, setSelectedMonth, setSelectedYear } from "../../redux/userSlice";
 
 export function FormBirthdate ({ setFieldValue }) {
-    const [selectedDay, setSelectedDay] = useState(null)
-    const [selectedMonth, setSelectedMonth] = useState(null)
-    const [selectedYear, setSelectedYear] = useState(null)
+    const selectedDay = useSelector((state) => state.user.dayValue);
+    const selectedMonth = useSelector((state) => state.user.monthValue);
+    const selectedYear = useSelector((state) => state.user.yearValue);
+    const dispatch = useDispatch()
 
     const isLeapYear = (year) => {
         if (year % 4 === 0) {
@@ -18,7 +21,7 @@ export function FormBirthdate ({ setFieldValue }) {
 
     const dayLength = selectedMonth?.id == 2 && selectedMonth?.id % 2 == 0 ? isLeapYear(selectedYear?.value) || selectedYear?.value == null ? 29 : 28 : 31
 
-    const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear() - 10
 
     const days = Array.from({ length: dayLength }, (_, i) => (i + 1).toString());
     const months = [
@@ -79,7 +82,7 @@ export function FormBirthdate ({ setFieldValue }) {
                         styles={customStyles}
                         options={days.map((day) => ({ label: day, value: day }))}
                         onChange={(selectedOption) => {
-                            setSelectedDay(selectedOption)
+                            dispatch(setSelectedDay(selectedOption))
                             setFieldValue("day", selectedOption.value)
                         }}
                         value={selectedDay}
@@ -102,7 +105,7 @@ export function FormBirthdate ({ setFieldValue }) {
                         styles={customStyles}
                         options={months.map((month) => ({ label: month.name, value: month.name, id: month.id }))}
                         onChange={(selectedOption) => {
-                            setSelectedMonth(selectedOption)
+                            dispatch(setSelectedMonth(selectedOption))
                             setFieldValue("month", selectedOption.value)
                         }}
                         value={selectedMonth}
@@ -125,7 +128,7 @@ export function FormBirthdate ({ setFieldValue }) {
                         styles={customStyles}
                         options={years.map((year) => ({ label: year, value: year }))}
                         onChange={(selectedOption) => {
-                            setSelectedYear(selectedOption)
+                            dispatch(setSelectedYear(selectedOption))
                             setFieldValue("year", selectedOption.value)
                         }}
                         value={selectedYear}

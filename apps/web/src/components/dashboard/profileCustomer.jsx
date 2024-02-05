@@ -10,6 +10,7 @@ import { Axios } from "../../lib/api";
 import { setData } from "../../redux/userSlice";
 import { ChangePassword } from "../edit/changePassword";
 import { ChangeProfilePicture } from "../edit/changeProfilePicture";
+import { FaUser } from "react-icons/fa";
 
 export function MyProfile() {
     const user = useSelector((state) => state.user.value);
@@ -65,10 +66,14 @@ export function MyProfile() {
     }, [userUpdate, user])
 
     return(
-        <div className="flex justify-center h-full">
-            <Card className="w-full flex flex-col justify-center gap-2 mx-2 p-3 border-solid border-brown-500 border-2 lg:flex-row lg:mx-96">
+        <div className="flex flex-col mx-auto w-full justify-center items-center h-full gap-2 lg:w-3/5">
+            <div className="flex w-full items-center gap-2">
+                <FaUser fontSize={'30px'}/>
+                <Typography variant="h4" color="blue-gray">Address List</Typography>
+            </div>
+            <Card className="w-full flex flex-col justify-center gap-2 p-3 border-solid border-brown-500 border-2 lg:flex-row">
                 <div className="flex flex-col w-full items-center gap-2 lg:w-96">
-                    <Card className="flex flex-col w-full px-5 items-center gap-2 py-2 border-solid border-brown-500 border-2 lg:w-72">
+                    <Card className="flex flex-col w-full px-5 items-center gap-2 py-2 border-solid border-gray-300 border-2 lg:w-72">
                         {
                             user.photoProfile == null || user.photoProfile == '' ?
                             <Avatar src={NullPhotoProfile} alt="photo profile" style={{ width: '250px', height: '250px' }}  />:
@@ -81,7 +86,7 @@ export function MyProfile() {
                     </Card>
                     <ChangePassword onUserUpdate={handleUserUpdate} />
                 </div>
-                <Card className="w-full overflow-scroll border-solid border-brown-500 border-2">
+                <Card className="w-full overflow-scroll border-solid border-gray-300 border-2">
                     <CardHeader floated={false} shadow={false} className="rounded-none mb-5">
                         <Typography variant="h5" color="blue-gray">
                             Edit Profile
@@ -109,7 +114,7 @@ export function MyProfile() {
                                             :
                                         </Typography>
                                     </td>
-                                    <td>
+                                    <td className="w-full">
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
@@ -118,7 +123,7 @@ export function MyProfile() {
                                             {item.data}
                                         </Typography>
                                     </td>
-                                    <td className="w-20 py-2 flex items-center justify-center">
+                                    <td className="w-fit py-2 px-4 flex items-center justify-center">
                                         {item.edit}
                                     </td>
                                 </tr>

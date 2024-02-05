@@ -59,7 +59,7 @@ export function RegisterEmail() {
                         <Typography variant="h4" color="blue-gray">
                             Register
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-center">
                             Nice to meet you! Please enter your email to register.
                         </Typography>
                         <Formik

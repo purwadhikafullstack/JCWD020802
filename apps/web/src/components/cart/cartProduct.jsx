@@ -1,10 +1,8 @@
-/* eslint-disable react/prop-types */
 import { FaPlus } from 'react-icons/fa6';
 import { FaMinus } from 'react-icons/fa6';
 import { FaRegTrashCan } from 'react-icons/fa6';
 import { IoIosHeartEmpty } from 'react-icons/io';
 import { Link } from 'react-router-dom';
-// import { IoIosHeart } from 'react-icons/io';
 
 const CartProduct = ({
   cart,

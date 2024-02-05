@@ -1,7 +1,7 @@
-import { Tab, TabPanel, Tabs, TabsBody, TabsHeader } from "@material-tailwind/react"
-import { ManageAddress } from "../components/manageAddress"
+import { Tab, TabPanel, Tabs, TabsBody, TabsHeader, Typography } from "@material-tailwind/react"
 import { MyProfile } from "../components/dashboard/profileCustomer"
 import { useState } from "react"
+import { ManageAddress } from "../components/dashboard/address/manageAddress";
 
 export function DashboardCustomer () {
     const [activeTab, setActiveTab] = useState("myProfile")
@@ -20,21 +20,23 @@ export function DashboardCustomer () {
     ]
 
     return (
-        <div className="mt-5">
+        <div className="mt-2">
             <Tabs value={activeTab} onChange={(value) => setActiveTab(value)}>
                 <TabsHeader
-                    className="rounded-none border-b border-blue-gray-50 bg-transparent p-0"
-                    indicatorProps={{ className:"bg-transparent border-b-2 border-gray-900 shadow-none rounded-none",}}
+                    className="rounded-none border-b border-blue-gray-50 bg-white"
+                    indicatorProps={{ className:"bg-transparent border-b-2 border-green-900 shadow-none rounded-none",}}
                 >
                     {data.map(({ label, value }) => (
                         <Tab
                             key={value}
                             label={value}
                             value={value}
-                            // onClick={() => setActiveTab(value)}
-                            className={activeTab === value ? "text-gray-900" : ""}
+                            onClick={() => setActiveTab(value)}
+                            className={activeTab === value ? "text-green-600" : ""}
                         >
-                            {label}
+                            <Typography variant="h6" className="text-md">
+                                {label}
+                            </Typography>
                         </Tab>
                     ))}
                 </TabsHeader>

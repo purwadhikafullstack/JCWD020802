@@ -4,11 +4,43 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
+import { Op } from 'sequelize';
 
 export const getAll = async (req, res) => {
     try {
-        const result = await User.findAll();
-        res.status(200).send(result);
+        const { page, sortBy, sortOrder, searchTerm, gender, role } = req.query
+
+        const limit = 10
+        const offset = (page - 1) * limit
+
+        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+
+        const result = await User.findAndCountAll({
+            where: {
+                [Op.not]: [
+                    { role: 'Super Admin' },
+                    { isFullyRegistered: true }
+                ],
+                ...(gender && { gender }),
+                ...(role && { role }),
+                ...(searchTerm && {
+                    [Op.or]: [
+                        { fullname: { [Op.like]: `%${searchTerm}%` } },
+                        { email: { [Op.like]: `%${searchTerm}%` } },
+                    ],
+                }),
+            }, offset, limit, order
+        });
+
+        const totalPages = Math.ceil(result.count / limit)
+
+        res.status(200).send({
+            totalItems: result.count,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+            users: result.rows
+        });
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -54,14 +86,28 @@ export const loginUser = async (req, res) => {
             })
         }
 
-        const payload = { id: checkUser.id}
-        const token = jwt.sign(payload, 'DistrictKayu')
+        const payload = { 
+            id: checkUser.id,
+            role: checkUser.role
+        }
 
-        res.status(200).send({
-            token,
-            message: 'Login Success',
-            result: checkUser
-        });
+        if (checkUser.role == 'Super Admin' || checkUser.role == "Warehouse Admin") {
+            const adminToken = jwt.sign(payload, 'DistrictKayu')
+
+            return res.status(200).send({
+                adminToken,
+                message: 'Login Success',
+                result: checkUser
+            });
+        } else {
+            const token = jwt.sign(payload, 'DistrictKayu')
+    
+            res.status(200).send({
+                token,
+                message: 'Login Success',
+                result: checkUser
+            });
+        }
     } catch (error) {
         console.log(error);
         res.status(403).send({ message: error.message });
@@ -148,13 +194,14 @@ export const registerGoogleUser = async (req, res) => {
 
 export const registerUser = async (req, res) => {
     try {
-        const { fullname, gender, password } = req.body
+        const { fullname, birthdate, gender, password } = req.body
 
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
 
         await User.update({ 
             fullname,
+            birthdate,
             gender,
             password: hashPassword,
             isVerified: true,

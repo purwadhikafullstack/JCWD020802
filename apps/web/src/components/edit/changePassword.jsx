@@ -39,7 +39,6 @@ export function ChangePassword({ onUserUpdate }) {
       toast.success('Password successfully changed!');
       onUserUpdate()
     } catch (error) {
-      console.log(error);
       handleOpen()
       toast.error('Incorrect old password!');
     } finally {
