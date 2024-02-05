@@ -10,6 +10,7 @@ import { productRouter } from './routers/productRouter';
 import { categoryRouter } from './routers/categoryRouter';
 import { stockRouter } from './routers/stockRouter';
 
+
 const router = Router();
 
 router.get('/', (req, res) => {

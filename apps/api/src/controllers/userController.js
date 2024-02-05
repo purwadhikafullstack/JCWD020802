@@ -1,10 +1,10 @@
+import { Op } from "sequelize";
 import User from "../models/user";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
-import { Op } from 'sequelize';
 
 export const getAll = async (req, res) => {
     try {
@@ -46,6 +46,7 @@ export const getAll = async (req, res) => {
         res.status(400).send({ message: error.message });
     }
 };
+
 
 export const getById = async (req, res) => {
     try {
@@ -232,6 +233,7 @@ export const checkEmail = async (req, res) => {
         res.status(400).send({ message: error.message });
     }
 }
+
 
 export const resendVerificationEmail = async (req, res) => {
     try {
