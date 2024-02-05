@@ -5,6 +5,8 @@ import { ProductPage } from "./pages/test.product";
 import { CategoryPage } from "./pages/test.category";
 import { AboutUs } from "./pages/test.aboutUs";
 import { Footer } from "./components/footer";
+import Cart from "./pages/cart";
+import Checkout from './pages/checkout';
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { Axios } from "./lib/api";
@@ -32,7 +34,8 @@ const router = createBrowserRouter([
   { path: '/products', element: <ProductPage /> },
   { path: '/categories', element: <CategoryPage /> },
   { path: '/about-us', element: <AboutUs /> },
-  { path: '/carts', element: <Cart /> },
+  { path: '/cart', element: <Cart /> },
+  { path: '/cart/checkout', element: <Checkout /> },
   { path: '/register-user/:token', element: <RegisterUserData /> },
   { path: '/verify-new-email/:token', element: <NewEmailVerification /> },
   {
