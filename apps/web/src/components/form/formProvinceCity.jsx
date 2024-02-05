@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import Select from 'react-select';
 import { toast } from 'react-toastify';
 import { Axios } from "../../lib/api";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedCity, setSelectedProvince } from "../../redux/positionSlice";
 
 export function FormProvinceCity({ setFieldValue }) {
+    const selectedProvince = useSelector((state) => state.position.provinceValue);
+    const selectedCity = useSelector((state) => state.position.cityValue);
     const [provinces, setProvinces] = useState([]);
     const [cities, setCities] = useState([]);
-    const [selectedProvince, setSelectedProvince] = useState(null);
-    const [selectedCity, setSelectedCity] = useState(null);
+    const dispatch = useDispatch()
     
     const getProvinces = async () => {
         try {
@@ -31,16 +34,16 @@ export function FormProvinceCity({ setFieldValue }) {
 
     const handleCityChange = async (selectedOption, setFieldValue) => {
         try {
-            setSelectedCity(selectedOption)
+            dispatch(setSelectedCity(selectedOption))
             setFieldValue('CityId', selectedOption.value)
             if (selectedOption == null) {
                 getCities()
                 getProvinces()
-                setSelectedProvince(null)
+                dispatch(setSelectedProvince(null))
             } else {
                 const response = await Axios.get(`addresses/province/${selectedOption.value}`)
                 setProvinces(response.data)
-                setSelectedProvince({ label: response.data[0].province, value: response.data[0].id })
+                dispatch(setSelectedProvince({ label: response.data[0].province, value: response.data[0].id }))
             }
         } catch (error) {
             toast.error('Error getting cities');
@@ -49,12 +52,12 @@ export function FormProvinceCity({ setFieldValue }) {
 
     const handleProvinceChange = async (selectedOption, setFieldValue) => {
         try {
-            setSelectedProvince(selectedOption)
+            dispatch(setSelectedProvince(selectedOption))
             setFieldValue('province', selectedOption.value)
             if (selectedOption == null) {
                 getCities()
                 getProvinces()
-                setSelectedCity(null)
+                dispatch(setSelectedCity(null))
             } else {
                 const response = await Axios.get(`addresses/city/${selectedOption.value}`)
                 setCities(response.data)
@@ -79,7 +82,7 @@ export function FormProvinceCity({ setFieldValue }) {
                     as={Select}
                     name="province"
                     options={provinces.map((province) => ({ label: province.province, value: province.id }))}
-                    value={selectedProvince?.value}
+                    value={selectedProvince}
                     onChange={(e) => handleProvinceChange(e, setFieldValue)}
                     isSearchable
                     isClearable
@@ -98,7 +101,7 @@ export function FormProvinceCity({ setFieldValue }) {
                     as={Select}
                     name="CityId"
                     options={cities.map((city) => ({ label: `${city.type} ${city.city_name}`, value: city.id }))}
-                    value={selectedCity?.value}
+                    value={selectedCity}
                     onChange={(e) => handleCityChange(e, setFieldValue)}
                     isSearchable
                     isClearable

@@ -10,6 +10,7 @@ export function FormFullname() {
             <Field
                 as={Input}
                 name="fullname"
+                placeholder="Your Fullname..."
                 className="!border-t-blue-gray-200 focus:!border-green-500"
                 labelProps={{
                     className: "before:content-none after:content-none",

@@ -15,7 +15,6 @@ export function NewEmailVerification () {
             await Axios.patch("edits/verify-new-email", {}, config)
             toast.success('New email successfully verified!');
         } catch (error) {
-            console.log(error);
             toast.error('Failed to verify new email!');
         }
     }

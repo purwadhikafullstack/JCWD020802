@@ -1,12 +1,12 @@
-import { Card, Input, Button, Typography, CardBody, Dialog, DialogHeader, DialogFooter, DialogBody, } from "@material-tailwind/react";
+import { Card, Button, Typography, CardBody, Dialog } from "@material-tailwind/react";
 import { useState } from 'react'
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Axios } from "../../../lib/api";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ClipLoader } from "react-spinners";
+import { toast } from 'react-toastify';
 import { RegisterGoogle } from "./registerGoogleEmail";
+import { FormEmail } from "../../form/formEmail";
+import { SubmitButton } from "../../form/submitButton";
 
 const SendEmailSchema = Yup.object().shape({
     email: Yup.string()
@@ -27,8 +27,12 @@ export function RegisterEmail() {
             handleOpenRegister()
             toast.success('Email has been sent. Please check your email to verify and continue the registration process.');
         } catch (error) {
-            console.error(error);
-            toast.error('Email is already exist!');
+            handleOpenRegister()
+            if (error.response.status == 401) {
+                toast.error('Email is already exist!');
+            } else {
+                toast.error('Failed to register. Please try again.')
+            }
         } finally {
             setIsLoading(false)
         }
@@ -36,18 +40,16 @@ export function RegisterEmail() {
 
     return (
         <div className="w-full lg:w-24">
-            <ToastContainer />
             <Button
-                variant="gradient"
                 size="sm"
-                color="brown"
-                className="w-full"
+                color="green"
+                className="w-full bg-green-600 hover:bg-green-300"
                 onClick={handleOpenRegister}
             >
                 <span>Register</span>
             </Button>
             <Dialog
-                size="sm"
+                size="xs"
                 open={openRegister}
                 handler={handleOpenRegister}
                 className="bg-transparent shadow-none"
@@ -57,7 +59,7 @@ export function RegisterEmail() {
                         <Typography variant="h4" color="blue-gray">
                             Register
                         </Typography>
-                        <Typography color="gray" className="mt-1 font-normal">
+                        <Typography color="gray" className="mt-1 font-normal text-center">
                             Nice to meet you! Please enter your email to register.
                         </Typography>
                         <Formik
@@ -68,45 +70,17 @@ export function RegisterEmail() {
                                 action.resetForm()
                             }}
                         >
-                            <Form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                                <div className="mb-1 flex flex-col gap-6">
-                                    <div className="mb-1 flex flex-col">
-                                        <Typography variant="h6" color="blue-gray" className="mb-2">
-                                            Email
-                                        </Typography>
-                                        <Field
-                                            as={Input}
-                                            name="email"
-                                            type="email"
-                                            placeholder="name@mail.com"
-                                            className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                            labelProps={{
-                                                className: "before:content-none after:content-none",
-                                            }}
-                                        />
-                                        <ErrorMessage
-                                            component="FormControl"
-                                            name="email"
-                                            style={{ color: "red"}}
-                                        />
-                                    </div>
-                                    <Button
-                                        type='submit'
-                                        color="brown"
-                                        size="lg"
-                                        ripple="light"
-                                        className="mt-2" 
-                                        fullWidth
-                                        disabled={isLoading}
-                                    >
-                                        {
-                                            isLoading ?
-                                            <ClipLoader size={20} color={"#fff"} loading={isLoading} /> :
-                                            "Send"
-                                        }
-                                    </Button>
+                            <Form className="mt-8 w-full">
+                                <div className="flex flex-col gap-6">
+                                    <FormEmail />
+                                    <SubmitButton isLoading={isLoading} buttonName={"Send"} />
                                 </div>
-                                <RegisterGoogle />  
+                                <div class="relative flex py-5 items-center">
+                                    <div class="flex-grow border-t border-gray-400"></div>
+                                    <span class="flex-shrink mx-4">OR</span>
+                                    <div class="flex-grow border-t border-gray-400"></div>
+                                </div>
+                                <RegisterGoogle handleOpenRegister={handleOpenRegister} />  
                             </Form>
                         </Formik>
                     </CardBody>

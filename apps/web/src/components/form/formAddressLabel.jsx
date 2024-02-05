@@ -10,6 +10,7 @@ export function FormAddressLabel() {
             <Field
                 as={Input}
                 name="label"
+                placeholder="Home, Office, Apartment, etc ..."
                 className="!border-t-blue-gray-200 focus:!border-green-500"
                 labelProps={{ className: "before:content-none after:content-none" }}
             />

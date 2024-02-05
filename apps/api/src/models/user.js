@@ -58,6 +58,10 @@ export const init = (sequelize) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      isFullyRegistered: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
       useProvider: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

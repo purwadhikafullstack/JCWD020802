@@ -4,14 +4,13 @@ import { toast } from 'react-toastify';
 import { Axios } from "../../lib/api";
 import { ClipLoader } from "react-spinners";
 
-export function ChangeProfilePicture({ onUserUpdate, fetch }) {
+export function ChangeProfilePicture({ onUserUpdate }) {
     const token = localStorage.getItem("token");
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false)
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
-        handleUpload()
     };
 
     const handleUpload = async () => {
@@ -30,9 +29,7 @@ export function ChangeProfilePicture({ onUserUpdate, fetch }) {
                 });
                 toast.success('Profile picture successfully changed');
                 onUserUpdate()
-                window.location.reload()
             }
-
         } catch (error) {
             console.error(error);
             toast.error('Failed changing profile picture!');

@@ -1,23 +1,25 @@
-import { Card, Input, Button, Typography, CardBody, IconButton } from "@material-tailwind/react";
+import { Card, Typography, CardBody } from "@material-tailwind/react";
 import { useState } from 'react'
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
-import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { Axios } from "../../../lib/api";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaMale, FaFemale } from "react-icons/fa"; 
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ClipLoader } from "react-spinners";
+import { FormFullname } from "../../form/formFullname";
+import { FormBirthdate } from "../../form/formBirthdate";
+import { FormGender } from "../../form/formGender";
+import { FormPassword } from "../../form/formPassword";
+import { SubmitButton } from "../../form/submitButton";
 
 YupPassword(Yup)
 
 const RegisterSchema = Yup.object().shape({
-    fullname: Yup.string()
-        .required("Fullname is required"),
-    gender: Yup.string()
-        .required("Gender is required"),    
+    fullname: Yup.string().required("Fullname is required"),
+    gender: Yup.string().required("Gender is required"), 
+    day: Yup.string().required('Day is required'),
+    month: Yup.string().required('Month is required'),
+    year: Yup.string().required('Year is required'),   
     password: Yup.string()
         .password()
         .required("Password is required"),
@@ -27,8 +29,6 @@ const RegisterSchema = Yup.object().shape({
 })
  
 export function RegisterUserData() {
-    const [showPassword, setShowPassword] = useState(false)
-    const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
     const params = useParams()
     const navigate = useNavigate()
@@ -39,29 +39,39 @@ export function RegisterUserData() {
         }
         try {
             setIsLoading(true)
-            await Axios.patch("users/register-user", data, config)
+            await Axios.patch(
+                "users/register-user",
+                {
+                    fullname: data.fullname,
+                    birthdate: `${data.day} ${data.month} ${data.year}`,
+                    gender: data.gender,
+                    password: data.password
+                },
+                config
+            )
             navigate("/")
-            toast.success('Register Success!');
+            toast.success('Email has been verified & register success!');
+            toast.success('Please try to login with your new account!')
         } catch (error) {
-            console.log(error);
-            toast.error('Register Failed!');
+            toast.error('Register Failed! Please try again!');
         } finally {
             setIsLoading(false)
         }
     }
 
     return (
-        <Card shadow={false} className="mx-auto w-full">
-            <CardBody className="flex flex-col items-center justify-center">
+        <Card shadow={false} className="mx-auto my-3 w-full border-solid border-brown-500 border-2 sm:w-3/5">
+            <CardBody className="flex flex-col w-full items-center justify-center">
                 <Typography variant="h4" color="blue-gray">
                     Register
                 </Typography>
-                <Typography color="gray" className="mt-1 font-normal">
+                <Typography color="gray" className="mt-1 font-normal text-center">
                     Nice to meet you! Please enter your details to register.
                 </Typography>
                 <Formik
                     initialValues={{
                         fullname: '',
+                        birthdate: '',
                         gender: '',
                         password: '',
                         passwordConfirmation: ''
@@ -72,115 +82,18 @@ export function RegisterUserData() {
                         action.resetForm()
                     }}
                 >
-                    <Form className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96">
-                        <div className="mb-1 flex flex-col gap-6">
-                            <div className="mb-1 flex flex-col">
-                                <Typography variant="h6" color="blue-gray" className="mb-2">
-                                    Fullname
-                                </Typography>
-                                <Field
-                                    as={Input}
-                                    name="fullname"
-                                    placeholder="Your Fullname..."
-                                    className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                    labelProps={{
-                                        className: "before:content-none after:content-none",
-                                    }}
-                                />
-                                <ErrorMessage
-                                    component="FormControl"
-                                    name="fullname"
-                                    style={{ color: "red"}}
-                                />
+                    {({ setFieldValue }) => (
+                        <Form className="mt-8 w-full">
+                            <div className="flex flex-col gap-6">
+                                <FormFullname />
+                                <FormBirthdate setFieldValue={setFieldValue} />
+                                <FormGender />
+                                <FormPassword label={'Password'} keyName={'password'} />
+                                <FormPassword label={'Password Confirmation'} keyName={'passwordConfirmation'} />
+                                <SubmitButton isLoading={isLoading} buttonName={"Verify & Register Account"} />
                             </div>
-                            <div className="mb-1 flex flex-col">
-                                <Typography variant="h6" color="blue-gray" className="mb-2">
-                                    Gender
-                                </Typography>
-                                <div role="group" className="flex justify-center">
-                                    <label className="mx-3 flex mr-10">
-                                        <Field name="gender" type="radio" value="Male"/>
-                                        <FaMale fontSize={'50px'} color="blue"/>
-                                        <Typography variant="lead" className="flex items-center">Male</Typography>
-                                    </label>
-                                    <label className="mx-3 flex">
-                                        <Field name="gender" type="radio" value="Female" />
-                                        <FaFemale fontSize={'50px'} color="red"/>
-                                        <Typography variant="lead" className="flex items-center">Female</Typography>
-                                    </label>
-                                </div>
-                                <ErrorMessage
-                                    component="FormControl"
-                                    name="gender"
-                                    style={{ color: "red"}}
-                                />
-                            </div>
-                            <div className="mb-1 flex flex-col">
-                                <Typography variant="h6" color="blue-gray" className="mb-2">
-                                    Password
-                                </Typography>
-                                <div className="flex">
-                                    <Field
-                                        as={Input}
-                                        name="password"
-                                        type={showPassword ? 'text' : 'password'}
-                                        placeholder="********"
-                                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                        labelProps={{
-                                            className: "before:content-none after:content-none",
-                                        }}
-                                    />
-                                    <IconButton variant="text" className="h-10 ml-1 flex items-center justify-center" onClick={() => setShowPassword((showPassword) => !showPassword)}>
-                                        {showPassword ? <BiSolidShow fontSize={"30px"}/> : <BiSolidHide fontSize={"30px"}/>}
-                                    </IconButton>
-                                </div>
-                                <ErrorMessage
-                                    component="FormControl"
-                                    name="password"
-                                    style={{ color: "red"}}
-                                />
-                            </div>
-                            <div className="mb-1 flex flex-col">
-                                <Typography variant="h6" color="blue-gray" className="mb-2">
-                                    Password Confirmation
-                                </Typography>
-                                <div className="flex">
-                                    <Field
-                                        as={Input}
-                                        name="passwordConfirmation"
-                                        type={showPasswordConfirmation ? 'text' : 'password'}
-                                        placeholder="********"
-                                        className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
-                                        labelProps={{
-                                            className: "before:content-none after:content-none",
-                                        }}
-                                    />
-                                    <IconButton variant="text" className="h-10 ml-1 flex items-center justify-center" onClick={() => setShowPasswordConfirmation((showPasswordConfirmation) => !showPasswordConfirmation)}>
-                                        {showPasswordConfirmation ? <BiSolidShow fontSize={"30px"}/> : <BiSolidHide fontSize={"30px"}/>}
-                                    </IconButton>
-                                </div>
-                                <ErrorMessage
-                                    component="FormControl"
-                                    name="passwordConfirmation"
-                                    style={{ color: "red"}}
-                                />
-                            </div>
-                            <Button
-                                type='submit'
-                                size="lg"
-                                className="mt-2" 
-                                fullWidth
-                                color="green"
-                                disabled={isLoading}
-                            >
-                                {
-                                    isLoading ? 
-                                    <ClipLoader size={20} color={"#fff"} loading={isLoading} /> : 
-                                    "Verify & Register Account"
-                                }
-                            </Button>
-                        </div>
-                    </Form>
+                        </Form>
+                    )}
                 </Formik>
             </CardBody>
         </Card>

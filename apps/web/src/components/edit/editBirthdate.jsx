@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { FormBirthdate } from "../form/formBirthdate";
 import { SubmitButton } from "../form/submitButton";
 import { EditButton } from "./editButton";
+import { useDispatch, useSelector } from "react-redux";
+import { setSelectedDay, setSelectedMonth, setSelectedYear } from "../../redux/userSlice";
 
 const DateSchema = Yup.object().shape({
   day: Yup.string().required('Day is required'),
@@ -16,10 +18,49 @@ const DateSchema = Yup.object().shape({
 
 export function EditBirthdate({ onUserUpdate }) {
   const token = localStorage.getItem("token");
+  const user = useSelector((state) => state.user.value);
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch()
 
-  const handleOpen = () => setOpen(!open)
+  const userBirthdate = user.birthdate ? user.birthdate.split(" ") : []
+
+    const months = [
+        { id: 1, name: 'January' },
+        { id: 2, name: 'February' },
+        { id: 3, name: 'March' },
+        { id: 4, name: 'April' },
+        { id: 5, name: 'May' },
+        { id: 6, name: 'June' },
+        { id: 7, name: 'July' },
+        { id: 8, name: 'August' },
+        { id: 9, name: 'September' },
+        { id: 10, name: 'October' },
+        { id: 11, name: 'November' },
+        { id: 12, name: 'December' }
+    ]
+
+    const findMonthId = user.birthdate ? months.find(month => month.name === userBirthdate[1]) : null
+    
+    const handleOpen = () => {
+        if (user.birthdate) {
+            dispatch(setSelectedDay({ label: userBirthdate[0], value: userBirthdate[0] }))
+            dispatch(setSelectedMonth({ label: userBirthdate[1], value: userBirthdate[1], id: findMonthId.id }))
+            dispatch(setSelectedYear({ label: userBirthdate[2], value: userBirthdate[2] }))
+        } else {
+            dispatch(setSelectedDay(null))
+            dispatch(setSelectedMonth(null))
+            dispatch(setSelectedYear(null))
+        }
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        dispatch(setSelectedDay(null))
+        dispatch(setSelectedMonth(null))
+        dispatch(setSelectedYear(null))
+        setOpen(false)
+    }
 
   const handleSubmit = async (data) => {
     try {
@@ -33,7 +74,6 @@ export function EditBirthdate({ onUserUpdate }) {
       toast.success('Birthdate successfully updated!');
       onUserUpdate()
     } catch (error) {
-      console.log(error);
       toast.error('Failed to update Fullname!');
     } finally {
       setIsLoading(false)
@@ -43,7 +83,7 @@ export function EditBirthdate({ onUserUpdate }) {
   return (
     <>
       <EditButton tooltip={"Edit Birthdate"} handleOpen={handleOpen}/>
-      <Dialog size="xs" open={open} handler={handleOpen}>
+      <Dialog size="xs" open={open} handler={handleClose}>
         <Card shadow={false} className="mx-auto w-full">
           <CardBody className="flex flex-col items-center justify-center">
             <Typography variant="h4" color="blue-gray">
@@ -54,9 +94,9 @@ export function EditBirthdate({ onUserUpdate }) {
             </Typography>
             <Formik
               initialValues={{
-                day: '',
-                month: '',
-                year: ''
+                day: userBirthdate[0],
+                month: userBirthdate[1],
+                year: userBirthdate[2]
               }}
               validationSchema={DateSchema}
               onSubmit={(values, action) => {

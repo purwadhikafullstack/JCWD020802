@@ -1,10 +1,11 @@
-import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Typography } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import { useEffect, useState } from 'react'
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase/firebaseConfig";
 import { Axios } from "../../../lib/api";
+import { toast } from 'react-toastify';
  
-export function RegisterGoogle () {
+export function RegisterGoogle ({ handleOpenRegister }) {
     const [googleUser, setGoogleUser] = useState({})
     const [isGoogleButtonClicked, setIsGoogleButtonClicked] = useState(false);
 
@@ -18,7 +19,7 @@ export function RegisterGoogle () {
             await signInWithPopup(auth, provider);
             setIsGoogleButtonClicked(true);
         } catch (error) {
-            console.log(error);
+            toast.error('Failed to login to your Google account!')
         }
     }
     
@@ -28,10 +29,12 @@ export function RegisterGoogle () {
                 `users/register-google-user?fullname=${googleUser?.displayName}&email=${googleUser?.email}`, {}
             )
             await signOut(auth)
+            handleOpenRegister()
             toast.success('Register Success!')
+            toast.success('Please try to login with Google account!')
         } catch (error) {
-            console.error(error);
             await signOut(auth)
+            handleOpenRegister()
             toast.error('Email is already exist!')
         }
     }
@@ -53,7 +56,7 @@ export function RegisterGoogle () {
                 onClick={handleGoogleSignIn}
             >
                 <img src="https://docs.material-tailwind.com/icons/google.svg" alt="metamask" className="h-6 w-6" />
-                Register your Google account
+                Register Google account
             </Button>
         </div>
     );

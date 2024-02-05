@@ -8,8 +8,39 @@ import transporter from "../middleware/transporter";
 
 export const getAll = async (req, res) => {
     try {
-        const result = await User.findAll();
-        res.status(200).send(result);
+        const { page, sortBy, sortOrder, searchTerm, gender, role } = req.query
+
+        const limit = 10
+        const offset = (page - 1) * limit
+
+        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+
+        const result = await User.findAndCountAll({
+            where: {
+                [Op.not]: [
+                    { role: 'Super Admin' },
+                    { isFullyRegistered: true }
+                ],
+                ...(gender && { gender }),
+                ...(role && { role }),
+                ...(searchTerm && {
+                    [Op.or]: [
+                        { fullname: { [Op.like]: `%${searchTerm}%` } },
+                        { email: { [Op.like]: `%${searchTerm}%` } },
+                    ],
+                }),
+            }, offset, limit, order
+        });
+
+        const totalPages = Math.ceil(result.count / limit)
+
+        res.status(200).send({
+            totalItems: result.count,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+            users: result.rows
+        });
     } catch (error) {
         console.log(error);
         res.status(400).send({ message: error.message });
@@ -37,36 +68,50 @@ export const loginUser = async (req, res) => {
         })
 
         if (!checkUser) {
-            return res.status(404).send({
-                message: 'User not found'
+            return res.status(400).send({
+                message: 'User not found! Please check your email!'
             })
         }
         
-        // if (!checkUser.isVerified) {
-        //     return res.status(401).send({
-        //         message: 'Your account is still not verified'
-        //     })
-        // }
+        if (!checkUser.isVerified) {
+            return res.status(401).send({
+                message: 'Your account is still not verified! Please check your email to verify your account or resend email for verification!'
+            })
+        }
 
         const isValidPassword = await bcrypt.compare(password, checkUser.password)
 
         if (!isValidPassword) {
-            return res.status(401).send({
+            return res.status(402).send({
                 message: 'Incorrect Password'
             })
         }
 
-        const payload = { id: checkUser.id}
-        const token = jwt.sign(payload, 'DistrictKayu')
+        const payload = { 
+            id: checkUser.id,
+            role: checkUser.role
+        }
 
-        res.status(200).send({
-            token,
-            message: 'Login Success',
-            result: checkUser
-        });
+        if (checkUser.role == 'Super Admin' || checkUser.role == "Warehouse Admin") {
+            const adminToken = jwt.sign(payload, 'DistrictKayu')
+
+            return res.status(200).send({
+                adminToken,
+                message: 'Login Success',
+                result: checkUser
+            });
+        } else {
+            const token = jwt.sign(payload, 'DistrictKayu')
+    
+            res.status(200).send({
+                token,
+                message: 'Login Success',
+                result: checkUser
+            });
+        }
     } catch (error) {
         console.log(error);
-        res.status(400).send({ message: error.message });
+        res.status(403).send({ message: error.message });
     }
 };
 
@@ -110,7 +155,7 @@ export const sendRegisterEmail = async (req, res) => {
 
             return res.status(200).send({status: "Email Sent!"});
         } else {
-            return res.status(400).send({
+            return res.status(401).send({
                 message: 'Email already exist!'
             });
         }
@@ -133,6 +178,7 @@ export const registerGoogleUser = async (req, res) => {
                 fullname, 
                 email,
                 isVerified: true,
+                isFullyRegistered: true,
                 useProvider: true
             });
             return res.status(200).send({status: "Register Success"});
@@ -147,68 +193,20 @@ export const registerGoogleUser = async (req, res) => {
     }
 };
 
-
-// export const checkEmail = async (req, res) => {
-//     try {
-//         const { email } = req.body
-//         const checkUser = await User.findOne({
-//             where: { email }
-//         })
-
-//         console.log(checkUser);
-
-//         if (checkUser != null) {
-//             // const payload = {
-//             //     id: checkUser.id
-//             // }
-//             // const token = jwt.sign(payload, process.env.TOKEN_KEY)
-
-//             const data = fs.readFileSync('./resetPasswordMail.html', 'utf-8')
-//             const tempCompile = await handlebars.compile(data)
-//             const tempResult = tempCompile({ email: email, link: `http://localhost:2000/reset-password/${email}` })
-
-//             await transporter.sendMail({
-//                 from: 'altairlink26@gmail.com',
-//                 to: email,
-//                 subject: 'Email Confirmation',
-//                 html: tempResult
-//             })
-//             return res.status(200).send('Email has been Verified')
-//         }
-
-//         return res.status(400).send('Email is not registered')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// };
-
-// export const verifyUser = async (req, res) => {
-//     try {
-//         await User.update({ isVerified: true }, 
-//         {
-//             where: { id: req.user.id }
-//         })
-
-//         res.status(200).send('Account has been Verified')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// };
-
 export const registerUser = async (req, res) => {
     try {
-        const { fullname, gender, password } = req.body
+        const { fullname, birthdate, gender, password } = req.body
 
         const salt = await bcrypt.genSalt(10)
         const hashPassword = await bcrypt.hash(password, salt)
 
         await User.update({ 
             fullname,
+            birthdate,
             gender,
             password: hashPassword,
-            isVerified: true
+            isVerified: true,
+            isFullyRegistered: true
         },{
             where: { id: req.user.id }
         })
@@ -237,65 +235,53 @@ export const checkEmail = async (req, res) => {
 }
 
 
-// export const resetPassword = async (req, res) => {
-//     try {
-//         const { email, newPassword ,newPasswordConfirmation } = req.body
-//         // const { email } = req.params
-//         const findUser = await User.findOne({
-//             where: { email }
-//         })
+export const resendVerificationEmail = async (req, res) => {
+    try {
+        const { email } = req.body
+
+        const user = await User.findOne({
+            where: { email }
+        })
+
+        if (user !== null) {
+            if (!user.isVerified) {
+                const payload = { id: user.id }
+                const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
+                if (user.isFullyRegistered) {
+                    const data = fs.readFileSync('./verifyEmail.html', 'utf-8')
+                    const tempCompile = await handlebars.compile(data)
+                    const tempResult = tempCompile({ email: email, link: `http://localhost:5173/verify-email/${token}` })
+    
+                    await transporter.sendMail({
+                        from: process.env.GMAIL_EMAIL,
+                        to: email,
+                        subject: 'Email Verification',
+                        html: tempResult
+                    })
+    
+                    return res.status(200).send({status: "Email Sent!"});
+                } else {
+                    const data = fs.readFileSync('./verifyRegisterEmail.html', 'utf-8')
+                    const tempCompile = await handlebars.compile(data)
+                    const tempResult = tempCompile({ email: email, link: `http://localhost:5173/register-user/${token}` })
+    
+                    await transporter.sendMail({
+                        from: process.env.GMAIL_EMAIL,
+                        to: email,
+                        subject: 'Email Verification & User Registration',
+                        html: tempResult
+                    })
         
-//         if (newPassword !== newPasswordConfirmation) {
-//             return res.status(400).send({ message: 'New password must match!' })
-//         }
-
-//         const salt = await bcrypt.genSalt(10)
-//         const hashPassword = await bcrypt.hash(newPasswordConfirmation, salt)
-
-//         await User.update(
-//             { password: hashPassword },
-//             { where: { email } }
-//         )
-
-//         return res.status(200).send('Password successfully changed!')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// };
-
-// export const changePassword = async (req, res) => {
-//     try {
-//         const { oldPassword, newPassword ,newPasswordConfirmation } = req.body
-//         const findUser = await User.findOne({
-//             where: { id: req.user.id }
-//         })
-      
-//         const isValidOldPassword = await bcrypt.compare(oldPassword, findUser.password)
-
-//         if (!isValidOldPassword) {
-//             return res.status(400).send({ message: 'Incorrect old password!' })
-//         }
-
-//         if (oldPassword == newPassword) {
-//             return res.status(400).send({ message: 'New password cannot be the same as the old password' })
-//         }
-
-//         if (newPassword !== newPasswordConfirmation) {
-//             return res.status(400).send({ message: 'New password must match!' })
-//         }
-
-//         const salt = await bcrypt.genSalt(10)
-//         const hashPassword = await bcrypt.hash(newPasswordConfirmation, salt)
-
-//         await User.update(
-//             { password: hashPassword },
-//             { where: { id: req.user.id } }
-//         )
-
-//         return res.status(200).send('Password successfully changed!')
-//     } catch (error) {
-//         console.log(error);
-//         res.status(400).send({ error: error.message })
-//     }
-// }
+                    return res.status(200).send({status: "Email Sent!"});
+                } 
+            } else {
+                return res.status(400).send({ message: 'Email is already verified!' });
+            }
+        } else {
+            return res.status(401).send({ message: 'Email is not registered!' });
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(402).send({ message: "Failed to register"});
+    }
+};

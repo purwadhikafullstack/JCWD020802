@@ -39,7 +39,6 @@ export function ChangePassword({ onUserUpdate }) {
       toast.success('Password successfully changed!');
       onUserUpdate()
     } catch (error) {
-      console.log(error);
       handleOpen()
       toast.error('Incorrect old password!');
     } finally {
@@ -56,10 +55,10 @@ export function ChangePassword({ onUserUpdate }) {
         <Card shadow={false} className="mx-auto w-full">
           <CardBody className="flex flex-col items-center justify-center">
             <Typography variant="h4" color="blue-gray">
-              Edit Birthdate
+              Change Password
             </Typography>
             <Typography color="gray" className="mt-1 font-normal">
-              Change your account birthdate
+              Change your account password
             </Typography>
             <Formik
               initialValues={{

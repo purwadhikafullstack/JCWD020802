@@ -28,13 +28,17 @@ export const init = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      productWeight: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       productPrice: {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
       totalStock: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       isDeleted: {
         type: DataTypes.BOOLEAN,

@@ -4,11 +4,13 @@ import CartProduct from '../components/cart/cartProduct';
 import { Axios } from '../lib/api';
 import { useSelector } from 'react-redux';
 import CartEmpty from '../components/cart/cartEmpty';
+import { Card } from '@material-tailwind/react';
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [weight, setWeight] = useState(0);
 
   const user = useSelector((state) => state.user.value);
 
@@ -19,16 +21,18 @@ const Cart = () => {
         (acc, item) => {
           acc.totalPrice += item.Product.productPrice * item.quantity;
           acc.totalQuantity += item.quantity;
+          acc.totalWeight += item.Product.productWeight
           return acc;
         },
-        { totalPrice: 0, totalQuantity: 0 },
+        { totalPrice: 0, totalQuantity: 0, totalWeight: 0 },
       );
 
-      const { totalPrice, totalQuantity } = total;
+      const { totalPrice, totalQuantity, totalWeight } = total;
 
       setQuantity(totalQuantity);
       setPrice(totalPrice);
       setCart(response?.data);
+      setWeight(totalWeight)
     } catch (error) {
       console.log(error);
     }
@@ -66,7 +70,7 @@ const Cart = () => {
   }, [user]);
 
   return (
-    <div className="px-5 py-5 sm:px-20 2xl:px-80 lg:pb-44">
+    <Card className="px-5 py-5 sm:px-20 2xl:px-80 lg:pb-44">
       <h3 className={cart.length !== 0 ? 'font-bold text-lg' : 'hidden'}>
         Shopping Cart ({quantity})
       </h3>
@@ -79,13 +83,13 @@ const Cart = () => {
               handleDecrement={handleDecrement}
               handleDelete={handleDelete}
             />
-            <CartPrice price={price} quantity={quantity} />
+            <CartPrice price={price} quantity={quantity} weight={weight} />
           </>
         ) : (
           <CartEmpty />
         )}
       </div>
-    </div>
+    </Card>
   );
 };
 

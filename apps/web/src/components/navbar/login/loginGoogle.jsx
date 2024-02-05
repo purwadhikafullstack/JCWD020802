@@ -1,14 +1,13 @@
-import { Button, Dialog, DialogBody, DialogFooter, DialogHeader, Typography } from "@material-tailwind/react";
-import { useEffect, useState, forwardRef, useImperativeHandle } from 'react'
+import { Button } from "@material-tailwind/react";
+import { useEffect, useState } from 'react'
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../firebase/firebaseConfig";
 import { Axios } from "../../../lib/api";
 import { setData } from "../../../redux/userSlice";
 import { useDispatch } from "react-redux";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
  
-export function LoginGoogle () {
+export function LoginGoogle ({ handleOpenLogin }) {
     const [googleUser, setGoogleUser] = useState({})
     const [isGoogleButtonClicked, setIsGoogleButtonClicked] = useState(false);
     const dispatch = useDispatch();
@@ -23,7 +22,8 @@ export function LoginGoogle () {
             await signInWithPopup(auth, provider);
             setIsGoogleButtonClicked(true);
         } catch (error) {
-            console.log(error);
+            handleOpenLogin()
+            toast.error('Failed login to your Google account!, please try again!')
         }
     }
     
@@ -36,23 +36,14 @@ export function LoginGoogle () {
                 await signOut(auth)
                 toast.success('Login Success!')
                 window.location.reload()
-            } else {
-                toast.error('Account not found!')
-            }
+            } 
         } catch (error) {
-            console.log(error);
             await signOut(auth)
-            toast.error('Login Failed!')
+            handleOpenLogin()
+            toast.error('Account not found!')
+            toast.error('Please register your google account first!')
         }
     }
-
-    const handleGoogleSignOut = async () => {
-        try {
-            await signOut(auth)
-        } catch (error) {
-            console.error(error);
-        }
-    };
 
     useEffect(() => {
         if (isGoogleButtonClicked) {
