@@ -4,14 +4,14 @@ const withMT = require('@material-tailwind/react/utils/withMT');
 module.exports = withMT({
   content: [
     './index.html',
-    './src/**/*.{html,js}',
-    './src/pages/**/*.{html,js}',
-    './src/components/**/*.{html,js}',
-    "../../node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
-    "../../node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
+    './src/**/*.{html,js,jsx,ts,tsx}',
+    './src/pages/**/*.{html,js,jsx,ts,tsx}',
+    './src/components/**/*.{html,js,jsx,ts,tsx}',
+    "../../node_modules/@material-tailwind/react/components/**/*.{html,js,ts,jsx,tsx}",
+    "../../node_modules/@material-tailwind/react/theme/components/**/*.{html,js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 });
