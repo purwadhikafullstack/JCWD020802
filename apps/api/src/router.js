@@ -9,6 +9,7 @@ import { adminRouter } from './routers/adminRouter';
 import { productRouter } from './routers/productRouter';
 import { categoryRouter } from './routers/categoryRouter';
 import { stockRouter } from './routers/stockRouter';
+import { rajaongkirRouter } from './routers/rajaongkirRouter';
 
 
 const router = Router();
@@ -29,5 +30,6 @@ router.use('/admins', adminRouter)
 router.use('/products', productRouter)
 router.use('/categories', categoryRouter)
 router.use('/stocks', stockRouter)
+router.use('/rajaongkir', rajaongkirRouter)
 
 export default router;

@@ -58,6 +58,8 @@ const main = async () => {
     app.use(json());
     app.use(urlencoded({ extended: true }));
     app.use("/public", express.static("./public"));
+    app.use("/categoryImg", express.static("./categoryImg"));
+    app.use("/productImg", express.static("./productImg"));
     app.use('/api', router);
 
     globalAPIErrorHandler(app);

@@ -5,8 +5,11 @@ import { FaUserCircle, FaUsers, FaWarehouse, FaBox, FaBoxes, FaShoppingCart } fr
 import { GrTransaction } from "react-icons/gr";
 import { Link } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
+import { useSelector } from "react-redux";
  
 export function SideBar() {
+    const user = useSelector((state) => state.user.value)
+
     const buttonList = [
         {
             icon: <FaUserCircle className="h-5 w-5" />,
@@ -50,6 +53,12 @@ export function SideBar() {
         },
     ]
 
+    const isWHAdmin = user.role === 'Warehouse Admin';
+
+    const filteredButtonList = buttonList.filter(
+        (item) => !isWHAdmin || item.label !== 'Users' && item.label !== 'Warehouse'
+    );
+
     const handleLogOut = async () => {
         try {
             localStorage.removeItem("adminToken");
@@ -66,8 +75,8 @@ export function SideBar() {
                 <img src={Logo} alt="logo" className="hidden h-10 lg:flex" />
                 <img src={IconLogo} alt="logo" className="flex h-10 lg:hidden" />
             </div>
-                {buttonList.map((item, key) => {
-                    const isLastItem = key === buttonList.length - 1;
+                {filteredButtonList.map((item, key) => {
+                    const isLastItem = key === filteredButtonList.length - 1;
                     return (
                         <Link to={item.path} className="w-fit lg:w-full">
                             <ListItem 

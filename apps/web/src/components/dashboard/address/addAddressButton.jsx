@@ -31,18 +31,12 @@ export function AddAddressButton({ handleAddressUpdate }) {
 
     return (
         <>
-            <div className="flex justify-between items-center">
-                <div className="flex justify-center items-center gap-2">
-                    <FaAddressBook fontSize={'30px'}/>
-                    <Typography variant="h4" color="blue-gray">Address List</Typography>
-                </div>
-                <Tooltip content={"Add New Address"} className="lg:hidden">
-                    <Button onClick={handleOpen} variant="gradient" color="green" className="flex items-center justify-center gap-2 ">
-                        <FaPlus />
-                        <Typography variant="h6" className="hidden text-xs lg:flex">New Address</Typography>
-                    </Button>
-                </Tooltip>
-            </div>
+            <Tooltip content={"Add New Address"} className="lg:hidden">
+                <Button onClick={handleOpen} variant="gradient" color="green" className="w-full flex items-center justify-center gap-2 ">
+                    <FaPlus />
+                    <Typography variant="h6" className="hidden text-xs lg:flex">New Address</Typography>
+                </Button>
+            </Tooltip>
             <Dialog open={open} handler={handleClose} size="md" className="flex flex-col max-h-full overflow-y-scroll">
                 <DialogHeader className="flex items-center justify-center">
                    Add Address

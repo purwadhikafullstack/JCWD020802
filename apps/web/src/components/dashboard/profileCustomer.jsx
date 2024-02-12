@@ -69,7 +69,7 @@ export function MyProfile() {
         <div className="flex flex-col mx-auto w-full justify-center items-center h-full gap-2 lg:w-3/5">
             <div className="flex w-full items-center gap-2">
                 <FaUser fontSize={'30px'}/>
-                <Typography variant="h4" color="blue-gray">Address List</Typography>
+                <Typography variant="h4" color="blue-gray">My Profile</Typography>
             </div>
             <Card className="w-full flex flex-col justify-center gap-2 p-3 border-solid border-brown-500 border-2 lg:flex-row">
                 <div className="flex flex-col w-full items-center gap-2 lg:w-96">

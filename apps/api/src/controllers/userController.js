@@ -10,13 +10,14 @@ export const getAll = async (req, res) => {
     try {
         const { page, sortBy, sortOrder, searchTerm, gender, role } = req.query
 
-        const limit = 10
+        const limit = 8
         const offset = (page - 1) * limit
 
         const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
 
         const result = await User.findAndCountAll({
             where: {
+                isDeleted: false,
                 [Op.not]: [
                     { role: 'Super Admin' },
                     { isFullyRegistered: true }

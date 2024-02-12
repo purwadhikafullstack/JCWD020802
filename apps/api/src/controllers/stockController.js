@@ -51,6 +51,19 @@ export const getStock = async (req, res) => {
     }
 };
 
+export const getStockByProductId = async (req, res) => {
+    try {
+        const { ProductId } = req.params
+        const result = await Stock.findAll({
+            where: { ProductId }
+        })
+        res.status(200).send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
 export const addNewStock = async (req, res) => {
     try {
         const { stock, WarehouseId, ProductId } = req.body

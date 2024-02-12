@@ -1,18 +1,16 @@
 import { Card, Typography } from "@material-tailwind/react";
-import { FaUsers } from "react-icons/fa";
 import { AddWHAdminButton } from "./addWHAdminButton";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Axios } from "../../../lib/api";
-import { MoveToTrashUser } from "./moveToTrashUser";
-import { EditUserData } from "./editUserData";
 import { PaginationButton } from "../../paginationButton";
 import { FaArrowUpShortWide, FaArrowDownShortWide, FaArrowDownUpAcrossLine } from "react-icons/fa6";
 import { Search } from "../search";
 import { FilterByGender } from "./filterByGender";
-import { FilterByRole } from "./filterByRole";
+import { AssignWHAdmin } from "./assignWHAdmin";
+import { EditWHAdmin } from "./editWHAdmin";
 
-export function ManageUser() {
+export function ManageWHAdmin() {
     const adminToken = localStorage.getItem('adminToken');
     const [userList, setUserList] = useState([]);
     const [userUpdate, setUserUpdate] = useState(false);
@@ -24,7 +22,7 @@ export function ManageUser() {
     const [genderFilter, setGenderFilter] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
 
-    const tableHead = ["Fullname", "Birthdate", "Gender", "Email", "Role", " ", ""];
+    const tableHead = ["Admin", "Warehouse", ""];
 
     const handleUserUpdate = () => {
         setUserUpdate(true)
@@ -50,7 +48,7 @@ export function ManageUser() {
             params: { page: currentPage, sortBy, sortOrder, searchTerm, gender: genderFilter, role: roleFilter }
         }
         try {
-            const response = await Axios.get("users/", config)
+            const response = await Axios.get("admins/warehouse-admin", config)
             setUserList(response.data.users)
             setTotalPages(response.data.totalPages);
             toast.success("Success getting users data!")
@@ -77,7 +75,6 @@ export function ManageUser() {
                 <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} setCurrentPage={setCurrentPage} />
                 <div className="w-full flex flex-col items-center justify-center gap-2 md:flex-row">
                     <FilterByGender setGenderFilter={setGenderFilter} setCurrentPage={setCurrentPage} />
-                    <FilterByRole setRoleFilter={setRoleFilter} setCurrentPage={setCurrentPage} />
                     <AddWHAdminButton />
                 </div>
                 <Card className="h-fit w-full overflow-scroll">
@@ -114,6 +111,7 @@ export function ManageUser() {
                         <tbody>
                             {userList.map((user) => {
                                 const classes = "p-4 border-b border-green-600";
+                                console.log(user.WarehouseAdmins[0]?.Warehouse.label);
                                 return (
                                     <tr key={user.id}>
                                         <td className={classes}>
@@ -131,46 +129,20 @@ export function ManageUser() {
                                                 color="blue-gray"
                                                 className="font-normal"
                                             >
-                                                {user.birthdate}
+                                                {
+                                                    user.isAssigned ? 
+                                                    user.WarehouseAdmins[0]?.Warehouse.label :
+                                                    "Not Assigned Yet"
+                                                }
                                             </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {user.gender}
-                                            </Typography>
-                                        </td>
-                                        <td className={`${classes} bg-green-50/50`}>
-                                            <Typography
-                                                as="a"
-                                                href="#"
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-medium"
-                                            >
-                                                {user.email}
-                                            </Typography>
-                                        </td>
-                                        <td className={classes}>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal"
-                                            >
-                                                {user.role}
-                                            </Typography>
-                                        </td>
-                                        <td className={`${classes} bg-green-50/50`}>
-                                            <div className="flex justify-center">
-                                                <EditUserData user={user} handleUserUpdate={handleUserUpdate} />
-                                            </div>
                                         </td>
                                         <td className={classes}>
                                             <div className="flex justify-center">
-                                                <MoveToTrashUser user={user} handleUserUpdate={handleUserUpdate} />
+                                                {
+                                                    user.isAssigned ?
+                                                    <EditWHAdmin user={user} handleUserUpdate={handleUserUpdate} /> :
+                                                    <AssignWHAdmin user={user} handleUserUpdate={handleUserUpdate} />
+                                                }
                                             </div>
                                         </td>
                                     </tr>

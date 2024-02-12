@@ -8,7 +8,7 @@ import { ChangeAddressButton } from "../../edit/changeAddressButton";
 import { toast } from 'react-toastify';
 import { DeleteAddressButton } from "./deleteAddress";
 import { ChangeMainButton } from "./changeMainButton";
-import { FaStar } from "react-icons/fa";
+import { FaAddressBook, FaStar } from "react-icons/fa";
 import { Search } from "../search";
 import { FilterProvinceCity } from "../filterProvinceCity";
 
@@ -50,7 +50,7 @@ export function ManageAddress() {
         }
         try {
             const response = await Axios.get(`addresses/list/${user.id}`, config)
-            setAddressList(response.data)
+            setAddressList(response.data.addresses)
             setTotalPages(response.data.totalPages);
             toast.success("Success getting user address data!")
         } catch (error) {
@@ -66,7 +66,13 @@ export function ManageAddress() {
 
     return (
         <div className="w-full flex flex-col mx-auto gap-2 lg:w-3/5">
-            <AddAddressButton handleAddressUpdate={handleAddressUpdate} />
+            <div className="flex justify-between items-center">
+                <div className="flex w-full items-center gap-2">
+                    <FaAddressBook fontSize={'30px'}/>
+                    <Typography variant="h4" color="blue-gray">Manage Address</Typography>
+                </div>
+                <AddAddressButton handleAddressUpdate={handleAddressUpdate} /> 
+            </div>
             <Card className="w-full flex flex-col mx-auto gap-5 border-solid border-brown-500 border-2 p-3">
                 <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} setCurrentPage={setCurrentPage} />
                 <FilterProvinceCity setProvinceFilter={setProvinceFilter} setCityFilter={setCityFilter} setCurrentPage={setCurrentPage} />

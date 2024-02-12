@@ -55,7 +55,10 @@ export const addCategory = async (req, res) => {
         })
 
         if (checkCategory == null) {
-            await ProductCategory.create({ categoryName })
+            await ProductCategory.create({ 
+                categoryName,
+                categoryPicture: req.file?.path
+            })
             return res.status(200).send({status: "Category Successfully Added!"});
         } else {
             res.status(401).send({status: "Category already exist!"});
@@ -82,7 +85,10 @@ export const editCategoryById = async (req, res) => {
             res.status(401).send({status: "Category doesn't exist!"});
         }
 
-        await ProductCategory.update({ categoryName }, {
+        await ProductCategory.update({ 
+            categoryName,
+            categoryPicture: req.file?.path
+        }, {
             where: [
                 { id },
                 { isDeleted: false }

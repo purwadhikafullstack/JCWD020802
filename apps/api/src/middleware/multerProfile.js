@@ -2,7 +2,7 @@ import multer from "multer";
 import fs from "fs";
 
 module.exports = {
-  multerUpload: () => {
+  multerUploadProfile: () => {
     const storage = multer.diskStorage({
       destination: (req, file, cb) => {
         cb(null, "./public");
