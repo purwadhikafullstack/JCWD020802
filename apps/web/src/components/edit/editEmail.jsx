@@ -13,7 +13,10 @@ const EditEmailSchema = Yup.object().shape({ email: Yup.string().email("Invalid 
  
 export function EditEmail({ onUserUpdate }) {
     const user = useSelector((state) => state.user.value)
-    const token = localStorage.getItem("token");
+    let token = localStorage.getItem("token");
+    if (user.role !== 'Customer') {
+        token = localStorage.getItem("adminToken");
+    }
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
  

@@ -31,7 +31,7 @@ export function ProductCategories() {
                 {categoryLists.map((item) => (
                     <div className="relative w-full">
                         <Button className="bg-white" onClick={() => navigate(`/products/${item.categoryName}`)}>
-                            <img class="h-auto max-w-full rounded-lg" src={`http://localhost:8000/${item.categoryPicture}`} alt="" />
+                            <img class="h-auto max-w-full rounded-lg" src={`${import.meta.env.VITE_LOCAL_HOST}${item.categoryPicture}`} alt="" />
                             <figcaption className="absolute bottom-3 w-3/4 justify-between rounded-r-xl border border-white bg-white/75 py-4 px-6 shadow-lg shadow-black/5 saturate-200 backdrop-blur-sm">
                                 <Typography variant="h5" color="blue-gray">
                                     {item.categoryName}

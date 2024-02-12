@@ -14,7 +14,7 @@ import { FaUser } from "react-icons/fa";
 
 export function AdminProfile() {
     const user = useSelector((state) => state.user.value);
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
     const dispatch = useDispatch();
     const [userUpdate, setUserUpdate] = useState(false)
 
@@ -77,7 +77,7 @@ export function AdminProfile() {
                         {
                             user.photoProfile == null || user.photoProfile == '' ?
                             <Avatar src={NullPhotoProfile} alt="photo profile" style={{ width: '250px', height: '250px' }}  />:
-                            <Avatar src={`http://localhost:8000/${user.photoProfile}`} alt="photo profile" style={{ width: '250px', height: '250px' }} />
+                            <Avatar src={`${import.meta.env.VITE_LOCAL_HOST}${user.photoProfile}`} alt="photo profile" style={{ width: '250px', height: '250px' }} />
                         }
                         <ChangeProfilePicture onUserUpdate={handleUserUpdate} />
                         <Typography variant="small" fullWidth className="text-justify" color="black">

@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Axios } from "../../../lib/api";
 import { EditWarehouseAddressButton } from "../../edit/editWarehouseAddressButton";
-import { MoveToTrashWarehouse } from "../warehouse/moveToTrashWarehouse";
 import { FaArrowDownShortWide, FaArrowDownUpAcrossLine, FaArrowUpShortWide } from "react-icons/fa6";
 import { PaginationButton } from "../../paginationButton";
 import { Search } from "../search";
 import { FilterWarehouse } from "./filterWarehouse";
 import { FilterProduct } from "./filterProduct";
+import { MoveToTrashStock } from "./moveToTrashStock";
+import { EditStockButton } from "../../edit/editStockButton";
 
 export function ManageStock() {
     const adminToken = localStorage.getItem('adminToken');
@@ -153,12 +154,12 @@ export function ManageStock() {
                                         </td>
                                         <td className={`${classes} bg-green-50/50`}>
                                             <div className="flex justify-center">
-                                                <EditWarehouseAddressButton warehouse={stock} handleStockUpdate={handleStockUpdate} />
+                                                <EditStockButton stock={stock} handleStockUpdate={handleStockUpdate} />
                                             </div>
                                         </td>
                                         <td className={classes}>
                                             <div className="flex justify-center">
-                                                <MoveToTrashWarehouse warehouse={stock} handleStockUpdate={handleStockUpdate} />
+                                                <MoveToTrashStock stock={stock} handleStockUpdate={handleStockUpdate} />
                                             </div>
                                         </td>
                                     </tr>
