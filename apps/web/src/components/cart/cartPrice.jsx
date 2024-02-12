@@ -99,7 +99,7 @@ const CartPrice = ({ price, quantity, weight }) => {
 
     const config = {
       headers: {
-        "key": "1c0a173111985e49ddd6d798c4c7ec9f",
+        "key": apiKey,
         "content-type": "application/x-www-form-urlencoded"
       },
     };
@@ -120,7 +120,8 @@ const CartPrice = ({ price, quantity, weight }) => {
 
       setServices(response.data.rajaongkir.results[0]);
     } catch (error) {
-      toast.error("Failed calculating shipping cost!");
+      console.log(error);
+      toast.error("Failed getting shipping cost!");
     }
   };
 
@@ -135,14 +136,9 @@ const CartPrice = ({ price, quantity, weight }) => {
   useEffect(() => {
     if (selectedService) {
       const newTotalPrice = price + selectedService.value;
-      console.log(newTotalPrice);
       setTotalPrice(newTotalPrice);
     }
   }, [selectedService]);
-
-  console.log(selectedService);
-  console.log(totalPrice);
-
   
   return (
     <div className="lg:w-80 lg:border-2 rounded-lg lg:p-5 h-full lg:shadow-md lg:sticky lg:top-[120px]">

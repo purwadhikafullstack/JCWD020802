@@ -17,7 +17,7 @@ const CartProduct = ({
           <div key={item.id} className="flex gap-5 my-2 border-y-2 py-2">
             <img
               className="rounded-lg h-auto w-32 "
-              src="https://kemahasiswaan.ummuba.ac.id/wp-content/uploads/2021/04/chair-2@2x.jpg"
+              src={`${import.meta.env.VITE_LOCAL_HOST}${item.Product.productMainPicture}`}
               alt=""
             />
             <div className="flex flex-col justify-between flex-1">

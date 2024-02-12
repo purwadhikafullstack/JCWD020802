@@ -6,9 +6,14 @@ import { EditButton } from "./editButton";
 import { toast } from 'react-toastify';
 import { FormGender } from "../form/formGender";
 import { SubmitButton } from "../form/submitButton";
+import { useSelector } from "react-redux";
 
 export function EditGender({ onUserUpdate }) {
-    const token = localStorage.getItem("token");
+    const user = useSelector((state) => state.user.value);
+    let token = localStorage.getItem("token");
+    if (user.role !== 'Customer') {
+        token = localStorage.getItem("adminToken");
+    }
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
  
@@ -26,7 +31,7 @@ export function EditGender({ onUserUpdate }) {
             toast.success('Gender successfully updated!');
             onUserUpdate()
         } catch (error) {
-            console.log(error);
+            handleOpen()
             toast.error('Failed to update Gender!');
         } finally {
             setIsLoading(false)

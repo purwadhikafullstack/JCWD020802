@@ -105,7 +105,7 @@ export function CustomerNavButton() {
                             {
                                 user.photoProfile == null || user.photoProfile == '' ?
                                 <Avatar size="sm" src={NullPhotoProfile} alt="photo profile" className="mx-6" /> :
-                                <Avatar size="sm" src={`http://localhost:8000/${user.photoProfile}`} alt="avatar" className="mx-6" />
+                                <Avatar size="sm" src={`${import.meta.env.VITE_LOCAL_HOST}${user.photoProfile}`} alt="avatar" className="mx-6" />
                             }
                         </div>
                     </MenuHandler>

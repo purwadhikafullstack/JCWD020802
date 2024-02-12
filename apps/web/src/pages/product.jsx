@@ -73,7 +73,7 @@ export function ProductPage() {
                                 <Card key={product.id} className="max-w-full h-80">
                                     <CardHeader shadow={false} floated={false} className="h-40">
                                         <img
-                                            src={`http://localhost:8000/${product.productMainPicture}`}
+                                            src={`${import.meta.env.VITE_LOCAL_HOST}${product.productMainPicture}`}
                                             alt="card-image"
                                             className="h-full w-full object-cover"
                                         />

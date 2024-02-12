@@ -11,7 +11,7 @@ import { RegisterUserData } from "./components/navbar/register/registerUserData"
 import Cart from "./pages/cart";
 import { DashboardCustomer } from "./pages/dashboardCustomer";
 import { EmailVerification } from "./components/edit/verifyEmail";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import "leaflet/dist/leaflet.css"
 import { ResetPassword } from "./components/edit/resetPassword";
@@ -74,8 +74,9 @@ function App() {
         }
       );
       dispatch(setData(response.data));
+      toast.success('Welcome!')
     } catch (error) {
-      console.log(error);
+      toast.error('Failed to keep login!')
     }
   };
 
@@ -84,11 +85,15 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-gray-100">
+    <div className="bg-gray-100 h-screen">
       <ToastContainer />
-      { localStorage.getItem("adminToken") ? '' : <NavBar /> }
-      <RouterProvider router={router} />
-      { localStorage.getItem("adminToken") ? '' : <Footer /> }
+      <div className="flex flex-col justify-between h-full">
+        <div>
+          { localStorage.getItem("adminToken") ? '' : <NavBar /> }
+          <RouterProvider router={router} />
+        </div>
+        { localStorage.getItem("adminToken") ? '' : <Footer /> }
+      </div>
     </div>
   );
 }

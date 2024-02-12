@@ -17,8 +17,11 @@ const DateSchema = Yup.object().shape({
 });
 
 export function EditBirthdate({ onUserUpdate }) {
-  const token = localStorage.getItem("token");
   const user = useSelector((state) => state.user.value);
+  let token = localStorage.getItem("token");
+  if (user.role !== 'Customer') {
+      token = localStorage.getItem("adminToken");
+  }
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch()
@@ -70,10 +73,11 @@ export function EditBirthdate({ onUserUpdate }) {
         { newBirthdate: `${data.day} ${data.month} ${data.year}` },
         { headers: { Authorization: `Bearer ${token}` }}
       );
-      handleOpen()
+      handleClose()
       toast.success('Birthdate successfully updated!');
       onUserUpdate()
     } catch (error) {
+      handleClose()
       toast.error('Failed to update Fullname!');
     } finally {
       setIsLoading(false)
@@ -83,7 +87,7 @@ export function EditBirthdate({ onUserUpdate }) {
   return (
     <>
       <EditButton tooltip={"Edit Birthdate"} handleOpen={handleOpen}/>
-      <Dialog size="xs" open={open} handler={handleClose}>
+      <Dialog size="sm" open={open} handler={handleClose}>
         <Card shadow={false} className="mx-auto w-full">
           <CardBody className="flex flex-col items-center justify-center">
             <Typography variant="h4" color="blue-gray">

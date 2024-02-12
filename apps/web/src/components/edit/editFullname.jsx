@@ -13,7 +13,10 @@ const EditFullnameSchema = Yup.object().shape({ fullname: Yup.string() })
  
 export function EditFullname({ onUserUpdate }) {
     const user = useSelector((state) => state.user.value)
-    const token = localStorage.getItem("token");
+    let token = localStorage.getItem("token");
+    if (user.role !== 'Customer') {
+        token = localStorage.getItem("adminToken");
+    }
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
  
@@ -31,7 +34,7 @@ export function EditFullname({ onUserUpdate }) {
             toast.success('Fullname successfully updated!');
             onUserUpdate()
         } catch (error) {
-            console.error(error);
+            handleOpen()
             toast.error('Failed to update Fullname!');
         } finally {
             setIsLoading(false)
