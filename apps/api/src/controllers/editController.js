@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
+import path from "path";
 
 export const sendResetPasswordEmail = async (req, res) => {
     try {
@@ -16,9 +17,9 @@ export const sendResetPasswordEmail = async (req, res) => {
         if (user) {
             const payload = { id: user.id }
             const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-            const data = fs.readFileSync('./resetPasswordEmail.html', 'utf-8')
+            const data = fs.readFileSync(path.join(__dirname, '../../resetPasswordEmail.html'), 'utf-8')
             const tempCompile = await handlebars.compile(data)
-            const tempResult = tempCompile({ email: email, link: `http://localhost:5173/reset-password/${token}` })
+            const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}reset-password/${token}` })
     
             await transporter.sendMail({
                 from: process.env.GMAIL_EMAIL,
@@ -162,9 +163,9 @@ export const editEmail = async (req, res) => {
 
         const payload = { id: req.user.id }
         const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-        const data = fs.readFileSync('./verifyEmail.html', 'utf-8')
+        const data = fs.readFileSync(path.join(__dirname, '../../verifyEmail.html'), 'utf-8')
         const tempCompile = await handlebars.compile(data)
-        const tempResult = tempCompile({ email: email, link: `http://localhost:5173/verify-email/${token}` })
+        const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}verify-email/${token}` })
 
         await transporter.sendMail({
             from: process.env.GMAIL_EMAIL,
