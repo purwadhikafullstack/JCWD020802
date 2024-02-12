@@ -208,7 +208,7 @@ const CartPrice = ({ price, quantity, weight }) => {
       <div className="flex justify-between font-bold border-t-2 py-2 my-2">
         <p>Total Price </p>
         <p>
-          {totalPrice.toLocaleString('id-ID', {
+          {totalPrice?.toLocaleString('id-ID', {
             style: 'currency',
             currency: 'IDR',
           })}
