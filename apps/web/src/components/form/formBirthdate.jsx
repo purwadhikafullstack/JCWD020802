@@ -59,7 +59,8 @@ export function FormBirthdate ({ setFieldValue }) {
         }),
         option: (provided, state) => ({
             ...provided,
-            backgroundColor: 'white',
+            backgroundColor: state.isSelected ? 'lightgreen' : 'white',
+            color: state.isSelected ? 'black' : 'inherit',
             '&:hover': {
                 backgroundColor: 'lightgreen',
             }

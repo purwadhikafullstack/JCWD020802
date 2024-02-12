@@ -60,7 +60,7 @@ export function RegisterUserData() {
     }
 
     return (
-        <Card shadow={false} className="mx-auto my-3 w-full border-solid border-brown-500 border-2 sm:w-3/5">
+        <Card shadow={false} className="mx-auto my-3 w-full shadow-lg sm:w-3/5">
             <CardBody className="flex flex-col w-full items-center justify-center">
                 <Typography variant="h4" color="blue-gray">
                     Register

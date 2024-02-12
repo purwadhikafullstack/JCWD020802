@@ -18,7 +18,7 @@ export function PinLocation() {
     const findLocation = async () => {
         try {
             const response = await axios.get(
-                `https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&countrycode=id&key=00e4f62e57e6487ea3db9807a275d3fe`
+                `https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&countrycode=id&key=${import.meta.env.GEOCODE_API}`
             );
 
             const result = response.data.results[0];

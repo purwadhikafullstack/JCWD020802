@@ -5,10 +5,10 @@ import { Axios } from "../../../lib/api";
 import { FaArrowDownShortWide, FaArrowDownUpAcrossLine, FaArrowUpShortWide } from "react-icons/fa6";
 import { PaginationButton } from "../../paginationButton";
 import { FilterCategory } from "./filterCategory";
-import { EditWarehouseAddressButton } from "../../edit/editWarehouseAddressButton";
-import { MoveToTrashWarehouse } from "../warehouse/moveToTrashWarehouse";
 import { Search } from "../search";
 import { AddProductButton } from "./addProductButton";
+import { EditProductButton } from "../../edit/editProductButton";
+import { MoveToTrashProduct } from "./moveToTrashProduct";
 
 export function ManageProduct() {
     const adminToken = localStorage.getItem('adminToken');
@@ -21,7 +21,7 @@ export function ManageProduct() {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
 
-    const tableHead = ["Name", "Weight (Kg)", "Detail", "Price (IDR)", "Total Stock", " ", ""];
+    const tableHead = ["Name", "Weight (Kg)", "Detail", "Price (IDR)", " ", ""];
 
     const handleProductUpdate = () => {
         setProductUpdate(true)
@@ -95,10 +95,8 @@ export function ManageProduct() {
                                     </Typography>
                                     {sortBy === head.toLowerCase() && (
                                         <span>
-                                            {
-                                                sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 
-                                                sortOrder === 'asc' ? <FaArrowUpShortWide color="white" /> : <FaArrowDownShortWide color="white" />
-                                            }
+                                            { sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 
+                                                sortOrder === 'asc' ? <FaArrowUpShortWide color="white" /> : <FaArrowDownShortWide color="white" /> }
                                         </span>
                                     )}
                                 </div>
@@ -144,26 +142,17 @@ export function ManageProduct() {
                                             color="blue-gray"
                                             className="font-normal"
                                         >
-                                            {product.productPrice}
+                                            {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(product.productPrice)}
                                         </Typography>
                                     </td>
                                     <td className={classes}>
-                                        <Typography
-                                            variant="small"
-                                            color="blue-gray"
-                                            className="font-normal"
-                                        >
-                                            {product.totalStock}
-                                        </Typography>
+                                        <div className="flex justify-center">
+                                            <EditProductButton product={product} handleProductUpdate={handleProductUpdate} />
+                                        </div>
                                     </td>
                                     <td className={`${classes} bg-green-50/50`}>
                                         <div className="flex justify-center">
-                                            <EditWarehouseAddressButton warehouse={product} handleProductUpdate={handleProductUpdate} />
-                                        </div>
-                                    </td>
-                                    <td className={classes}>
-                                        <div className="flex justify-center">
-                                            <MoveToTrashWarehouse warehouse={product} handleProductUpdate={handleProductUpdate} />
+                                            <MoveToTrashProduct product={product} handleProductUpdate={handleProductUpdate} />
                                         </div>
                                     </td>
                                 </tr>

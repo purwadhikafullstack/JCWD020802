@@ -3,9 +3,14 @@ import { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 import { Axios } from "../../lib/api";
 import { ClipLoader } from "react-spinners";
+import { useSelector } from "react-redux";
 
 export function ChangeProfilePicture({ onUserUpdate }) {
-    const token = localStorage.getItem("token");
+    const user = useSelector((state) => state.user.value)
+    let token = localStorage.getItem("token");
+    if (user.role !== 'Customer') {
+        token = localStorage.getItem("adminToken");
+    }
     const [file, setFile] = useState(null);
     const [uploading, setUploading] = useState(false)
 

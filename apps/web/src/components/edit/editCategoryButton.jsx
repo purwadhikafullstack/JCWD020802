@@ -3,11 +3,9 @@ import { useState } from 'react'
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Axios } from "../../lib/api";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from 'react-toastify';
 import { SubmitButton } from "../form/submitButton";
 import { EditButton } from "./editButton";
-import { setSelectedCategory } from "../../redux/productSlice";
 import { FormCategoryName } from "../form/formCategoryName";
 
 const EditCategorySchema = Yup.object().shape({ categoryName: Yup.string() })
@@ -59,6 +57,7 @@ export function EditCategoryButton({ category, handleCategoryUpdate }) {
             toast.success('Category successfully updated!');
             handleCategoryUpdate()
         } catch (error) {
+            handleClose()
             toast.error('Failed to update Category!');
         } finally {
             setIsLoading(false)

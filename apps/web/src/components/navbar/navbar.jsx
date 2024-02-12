@@ -5,7 +5,6 @@ import {
   IconButton
 } from "@material-tailwind/react";
 import { FaSearch } from "react-icons/fa";
-import { FiMenu, FiX } from "react-icons/fi";
 import Logo from "../../assets/Logo with name.png";
 import { Search } from "./subComponents/search";
 import { NavList } from "./subComponents/navListButton";
