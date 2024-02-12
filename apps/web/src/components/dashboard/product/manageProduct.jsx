@@ -21,7 +21,7 @@ export function ManageProduct() {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
 
-    const tableHead = ["Name", "Weight", "Detail", "Price", "Total Stock", " ", ""];
+    const tableHead = ["Name", "Weight (Kg)", "Detail", "Price (IDR)", "Total Stock", " ", ""];
 
     const handleProductUpdate = () => {
         setProductUpdate(true)
@@ -124,9 +124,9 @@ export function ManageProduct() {
                                         <Typography
                                             variant="small"
                                             color="blue-gray"
-                                            className="font-normal"
+                                            className="font-normal text-center"
                                         >
-                                            {product.productWeight}
+                                            {(product.productWeight)/1000}
                                         </Typography>
                                     </td>
                                     <td className={classes}>

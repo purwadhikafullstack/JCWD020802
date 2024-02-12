@@ -1,6 +1,7 @@
 import Address from "../models/address";
 import City from "../models/city";
 import Province from "../models/province";
+import { Op } from "sequelize";
 
 export const getProvince = async (req, res) => {
     try {
@@ -86,7 +87,6 @@ export const getAddressById = async (req, res) => {
                 }
             ],
             where: { 
-                isDeleted: false,
                 UserId,
                 ...(province && { '$City.Province.province$': province }),
                 ...(city && { 

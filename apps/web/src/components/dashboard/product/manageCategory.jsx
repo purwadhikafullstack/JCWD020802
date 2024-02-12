@@ -8,6 +8,7 @@ import { FilterCategory } from "./filterCategory";
 import { AddCategoryButton } from "./addCategoryButton";
 import { EditWarehouseAddressButton } from "../../edit/editWarehouseAddressButton";
 import { MoveToTrashWarehouse } from "../warehouse/moveToTrashWarehouse";
+import { EditCategoryButton } from "../../edit/editCategoryButton";
 
 export function ManageCategory() {
     const adminToken = localStorage.getItem('adminToken');
@@ -119,12 +120,12 @@ export function ManageCategory() {
                                     </td>
                                     <td className={`${classes} bg-green-50/50`}>
                                         <div className="flex justify-center">
-                                            <EditWarehouseAddressButton warehouse={category} handleCategoryUpdate={handleCategoryUpdate} />
+                                            <EditCategoryButton category={category} handleCategoryUpdate={handleCategoryUpdate} />
                                         </div>
                                     </td>
                                     <td className={classes}>
                                         <div className="flex justify-center">
-                                            <MoveToTrashWarehouse warehouse={category} handleCategoryUpdate={handleCategoryUpdate} />
+                                            <MoveToTrashWarehouse category={category} handleCategoryUpdate={handleCategoryUpdate} />
                                         </div>
                                     </td>
                                 </tr>

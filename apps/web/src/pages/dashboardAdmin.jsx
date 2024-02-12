@@ -1,5 +1,5 @@
 import { Card } from "@material-tailwind/react";
-import { ManageUser } from "../components/dashboard/user/manageUser";
+import { ManageUserAndWHAdmin } from "../components/dashboard/user/manageUserAndWHAdmin";
 import { ManageProductAndCategory } from "../components/dashboard/product/manageProductAndCategory";
 import { ManageStock } from "../components/dashboard/stock/manageStock";
 import { Order } from "../components/dashboard/order";
@@ -16,7 +16,7 @@ const Components = ({ match }) => {
         case "/dashboard-admin":
             return <AdminProfile />;
         case "/dashboard-admin/user":
-            return <ManageUser />;
+            return <ManageUserAndWHAdmin />;
         case "/dashboard-admin/warehouse":
             return <ManageWarehouse />;
         case "/dashboard-admin/products":

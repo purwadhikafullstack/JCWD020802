@@ -28,6 +28,7 @@ export function EditEmail({ onUserUpdate }) {
                 { headers: { Authorization: `Bearer ${token}` }}
             )
             handleOpen()
+            localStorage.removeItem("token");
             toast.success('Email successfully changed. Please check your email to verify your new email!');
             onUserUpdate()
         } catch (error) {

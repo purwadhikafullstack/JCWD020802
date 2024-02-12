@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react";
 import SelectAddressButton from "./selectAddressButton";
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { Axios } from "../../lib/api";
 import { toast } from "react-toastify";
+import Select from 'react-select';
+import axios from "axios";
 
 const CartPrice = ({ price, quantity, weight }) => {
   const token = localStorage.getItem('token');
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [warehouses, setWarehouses] = useState(null)
   const [selectedDestination, setSelectedDestination] = useState(null)
-  const [lat, setLat] = useState(null)
-  const [long, setLong] = useState(null)
+  const [selectedCourier, setSelectedCourier] = useState(null)
+  const [services, setServices] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(null);
+  
+  const courierOptions = [
+    { label: "JNE", value: "jne" },
+    { label: "POS Indonesia", value: "pos" },
+    { label: "TIKI", value: "tiki" },
+  ];
 
   const getWarehouse = async () => {
     const config = {
@@ -53,16 +63,12 @@ const CartPrice = ({ price, quantity, weight }) => {
     let nearestDestination = null;;
 
     for (const destination of destinations) {
-      console.log(originLat);
-      console.log(originLon);
       const distance = calculateDistance(
         originLat,
         originLon,
         destination.latitude,
         destination.longtitude
       );
-
-      console.log(distance);
 
       if (distance < nearestDistance) {
         nearestDistance = distance;
@@ -74,27 +80,68 @@ const CartPrice = ({ price, quantity, weight }) => {
   }
 
   useEffect(() => {
-    console.log(selectedAddress);
-    console.log(warehouses);
     if (selectedAddress) {
       const nearestDestination = findNearestDestination(
         warehouses,
         selectedAddress.latitude,
         selectedAddress.longtitude
       );
-      console.log(nearestDestination);
       setSelectedDestination(nearestDestination);
     }
   }, [selectedAddress]);
 
   const handleSelectAddress = (address) => {
     setSelectedAddress(address);
-    setLat(address.latitude)
-    setLong(address.longtitude)
-    // findNearestDestination(warehouses, selectedAddress.latitude, selectedAddress.longitude);
   };
-  
-  console.log(selectedDestination);
+
+  const getServices = async () => {
+    const apiKey = import.meta.env.RAJAONGKIR_API;
+
+    const config = {
+      headers: {
+        "key": "1c0a173111985e49ddd6d798c4c7ec9f",
+        "content-type": "application/x-www-form-urlencoded"
+      },
+    };
+
+    const requestBody = {
+      origin: selectedAddress.CityId,
+      destination: selectedDestination.CityId,
+      weight: weight,
+      courier: selectedCourier.value,
+    };
+
+    try {
+      const response = await Axios.post(
+        "rajaongkir/cost",
+        requestBody,
+        config
+      );
+
+      setServices(response.data.rajaongkir.results[0]);
+    } catch (error) {
+      toast.error("Failed calculating shipping cost!");
+    }
+  };
+
+  useEffect(() => {
+    getServices()
+  }, [selectedCourier])
+
+  const handleSelectService = (service) => {
+    setSelectedService(service);
+  };
+
+  useEffect(() => {
+    if (selectedService) {
+      const newTotalPrice = price + selectedService.value;
+      console.log(newTotalPrice);
+      setTotalPrice(newTotalPrice);
+    }
+  }, [selectedService]);
+
+  console.log(selectedService);
+  console.log(totalPrice);
 
   
   return (
@@ -132,21 +179,44 @@ const CartPrice = ({ price, quantity, weight }) => {
           </Card>
         </div>
       )}
+      <div className="flex flex-col mt-4">
+        <Typography variant="h6">Select Courier:</Typography>
+        <Select
+          placeholder="Courier..."
+          options={courierOptions}
+          value={selectedCourier}
+          onChange={(value) => setSelectedCourier(value)}
+          isClearable
+        />
+        {services && (
+        <div className="flex flex-col mt-4">
+          <Typography variant="h6">Select Service:</Typography>
+          <Select
+            placeholder="Service..."
+            options={services.costs.map((service) => ({
+              label: `${service.service} - ${service.cost[0].value.toLocaleString('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+              })} - ETA: ${service.cost[0].etd}`,
+              value: service.cost[0].value,
+            }))}
+            onChange={(value) => handleSelectService(value)}
+          />
+        </div>
+      )}
+      </div>
       <div className="flex justify-between font-bold border-t-2 py-2 my-2">
         <p>Total Price </p>
         <p>
-          {price.toLocaleString('id-ID', {
+          {totalPrice.toLocaleString('id-ID', {
             style: 'currency',
             currency: 'IDR',
           })}
         </p>
       </div>
-      <button
-        className="select-none w-full rounded-lg bg-green-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-        type="button"
-      >
-        checkout
-      </button>
+      <Button className="w-full">
+        Checkout
+      </Button>
     </div>
   );
 };

@@ -1,9 +1,112 @@
 import User from "../models/user";
+import WarehouseAdmin from "../models/warehouse.admin";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
 import { Op } from 'sequelize';
+import Warehouse from "../models/warehouse";
+
+export const getWHAdmin = async (req, res) => {
+    try {
+        const { page, sortBy, sortOrder, searchTerm, gender } = req.query
+
+        const limit = 8
+        const offset = (page - 1) * limit
+
+        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+
+        const result = await User.findAndCountAll({
+            include : {
+                model: WarehouseAdmin,
+                include : {
+                    model: Warehouse,
+                    attributes: ['label']
+                }
+            },
+            where: {
+                [Op.and]: [
+                    { role: 'Warehouse Admin' },
+                    { isDeleted: false }
+                ],
+                ...(gender && { gender }),
+                ...(searchTerm && {
+                    [Op.or]: [
+                        { fullname: { [Op.like]: `%${searchTerm}%` } }
+                    ],
+                }),
+            }, offset, limit, order
+        });
+
+        const totalPages = Math.ceil(result.count / limit)
+
+        res.status(200).send({
+            totalItems: result.count,
+            totalPages,
+            currentPage: page,
+            pageSize: limit,
+            users: result.rows
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+};
+
+export const assignWHAdminByAdminId = async (req, res) => {
+    try {
+        const { UserId } = req.params
+        const { WarehouseId } = req.body
+
+        const checkAdmin = await WarehouseAdmin.findOne({
+            where: { UserId }
+        })
+
+        if (checkAdmin) {
+            return res.status(402).send({status: "Warehouse admin still not assign yet!"});
+        }
+        await WarehouseAdmin.create({
+            UserId,
+            WarehouseId
+        })
+
+        await User.update({
+            isAssigned: true
+        }, {
+            where: { id: UserId }
+        })
+
+        return res.status(200).send({status: "Warehouse Admin Successfully Assigned!"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
+export const editWHAdminByAdminId = async (req, res) => {
+    try {
+        const { UserId } = req.params
+        const { WarehouseId } = req.body
+
+        const checkAdmin = await WarehouseAdmin.findOne({
+            where: { UserId }
+        })
+
+        if (!checkAdmin) {
+            return res.status(402).send({status: "Warehouse admin still not assign yet!"});
+        }
+        await WarehouseAdmin.update({
+            WarehouseId
+        }, {
+            where: { UserId }
+        })
+
+        return res.status(200).send({status: "Warehouse Admin Successfully Assigned!"});
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
 
 export const sendRegisterWHAdminEmail = async (req, res) => {
     try {

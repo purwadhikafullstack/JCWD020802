@@ -19,6 +19,7 @@ import { DashboardAdmin } from "./pages/dashboardAdmin";
 import { RequiredAdmin } from "./components/requiredAdmin";
 import { RequiredCustomer } from "./components/requiredCustomer";
 import { RequiredNotAdmin } from "./components/requiredNotAdmin";
+import { RequiredSuperAdmin } from "./components/requiredSuperAdmin";
 
 const router = createBrowserRouter([
   {
@@ -26,14 +27,15 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <HomePage /> },
       { path: '/products', element: <ProductPage /> },
-      { path: '/carts', element: <Cart /> },
+      { path: '/products/:category', element: <ProductPage /> },
       { path: '/register-user/:token', element: <RegisterUserData /> },
       { path: '/verify-email/:token', element: <EmailVerification /> },
       { path: '/reset-password/:token', element: <ResetPassword /> },
       {
         element: <RequiredCustomer />,
         children: [
-          { path: '/dashboard-customer', element: <DashboardCustomer /> }
+          { path: '/dashboard-customer', element: <DashboardCustomer /> },
+          { path: '/carts', element: <Cart /> },
         ],
       }
     ]
@@ -42,12 +44,17 @@ const router = createBrowserRouter([
     element: <RequiredAdmin />,
     children: [
       { path: '/dashboard-admin', element: <DashboardAdmin /> },
-      { path: '/dashboard-admin/user', element: <DashboardAdmin /> },
-      { path: '/dashboard-admin/warehouse', element: <DashboardAdmin /> },
       { path: '/dashboard-admin/products', element: <DashboardAdmin /> },
       { path: '/dashboard-admin/stocks', element: <DashboardAdmin /> },
       { path: '/dashboard-admin/orders', element: <DashboardAdmin /> },
-      { path: '/dashboard-admin/payments', element: <DashboardAdmin /> }
+      { path: '/dashboard-admin/payments', element: <DashboardAdmin /> },
+      {
+        element: <RequiredSuperAdmin />,
+        children: [
+          { path: '/dashboard-admin/user', element: <DashboardAdmin /> },
+          { path: '/dashboard-admin/warehouse', element: <DashboardAdmin /> }
+        ],
+      },
     ],
   },
 ]);

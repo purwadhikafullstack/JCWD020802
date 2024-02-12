@@ -62,7 +62,7 @@ const CartProduct = ({
         );
       })}
       <p className="text-gray-600 pb-10">
-        <Link to="/">Continue Shopping</Link>
+        <Link to="/products">Continue Shopping</Link>
       </p>
     </div>
   );

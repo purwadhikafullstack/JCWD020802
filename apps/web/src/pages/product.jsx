@@ -1,12 +1,12 @@
-import { Button, Card, CardBody, CardFooter, CardHeader, Typography } from "@material-tailwind/react";
+import { Card, CardBody, CardFooter, CardHeader, Typography } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { FaArrowDownShortWide, FaArrowDownUpAcrossLine, FaArrowUpShortWide } from "react-icons/fa6";
 import { Axios } from "../lib/api";
 import { FilterCategory } from "../components/dashboard/product/filterCategory";
 import { Search } from "../components/dashboard/search";
 import { PaginationButton } from "../components/paginationButton";
 import { AddToCartButton } from "../components/cart/addToCartButton";
+import { useParams } from "react-router-dom";
 
 export function ProductPage() {
     const adminToken = localStorage.getItem('adminToken');
@@ -17,6 +17,7 @@ export function ProductPage() {
     const [sortOrder, setSortOrder] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
+    const { category } = useParams();
 
     const handleSort = (field) => {
         if (field === "" || field === " ") {
@@ -32,7 +33,7 @@ export function ProductPage() {
         setCurrentPage(1);
     }
 
-    const fetchProduct = async () => {
+    const fetchProduct = async () => {   
         const config = {
             headers: { Authorization: `Bearer ${adminToken}` },
             params: { page: currentPage, sortBy, sortOrder, searchTerm, category: categoryFilter }
@@ -44,7 +45,7 @@ export function ProductPage() {
             toast.success("Success getting product data!")
         } catch (error) {
             if (error.response.status == 400) {
-                toast.error('Error Token')
+                toast.error('Please Log In to your account first!')
             } else if (error.response.status == 401) {
                 toast.error('Unauthorize (Super Admin only)!')
             } else {
@@ -54,6 +55,7 @@ export function ProductPage() {
     }
 
     useEffect(() => {
+        setCategoryFilter(category || '');
         fetchProduct()
     }, [currentPage, sortBy, sortOrder, searchTerm, categoryFilter]);
 
@@ -71,7 +73,7 @@ export function ProductPage() {
                                 <Card key={product.id} className="max-w-full h-80">
                                     <CardHeader shadow={false} floated={false} className="h-40">
                                         <img
-                                            src="https://images.unsplash.com/photo-1629367494173-c78a56567877?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=927&q=80"
+                                            src={`http://localhost:8000/${product.productMainPicture}`}
                                             alt="card-image"
                                             className="h-full w-full object-cover"
                                         />

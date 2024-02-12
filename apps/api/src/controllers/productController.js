@@ -84,7 +84,8 @@ export const addProduct = async (req, res) => {
                 productWeight,
                 productDetail,
                 productPrice,
-                ProductCategoryId
+                ProductCategoryId,
+                productMainPicture: req.file?.path
             })
             return res.status(200).send({status: "Product Successfully Added!"});
         } else {

@@ -51,7 +51,7 @@ export function NavBar() {
           { 
             token ? <CustomerNavButton /> : 
             <div className="hidden lg:flex">
-              <div className="flex items-center gap-x-1">
+              <div className="ml-5 flex items-center gap-x-1">
                 <Login />
                 <RegisterEmail />
               </div>

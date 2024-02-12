@@ -21,7 +21,7 @@ export const getActive = async (req) => {
       include: [
         {
           model: Product,
-          attributes: ['productPrice', 'productName', 'totalStock', 'productWeight'],
+          attributes: ['productPrice', 'productName', 'productWeight'],
         },
       ],
     });
