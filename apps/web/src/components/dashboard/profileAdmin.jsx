@@ -10,6 +10,7 @@ import { Axios } from "../../lib/api";
 import { setData } from "../../redux/userSlice";
 import { ChangePassword } from "../edit/changePassword";
 import { ChangeProfilePicture } from "../edit/changeProfilePicture";
+import { FaUser } from "react-icons/fa";
 
 export function AdminProfile() {
     const user = useSelector((state) => state.user.value);
@@ -65,73 +66,72 @@ export function AdminProfile() {
     }, [userUpdate, user])
 
     return(
-        <div className="flex flex-col justify-center h-full mx-2">
-            <Typography variant="h3">
-                Admin Profile
-            </Typography>
-            <div className="flex h-full">
-                <Card className="w-full flex flex-col justify-center gap-2 p-3 border-solid border-brown-500 border-2 lg:flex-row">
-                    <div className="flex flex-col w-full items-center gap-2 lg:w-96">
-                        <Card className="flex flex-col w-full px-5 items-center gap-2 py-2 border-solid border-brown-500 border-2 lg:w-72">
-                            {
-                                user.photoProfile == null || user.photoProfile == '' ?
-                                <Avatar src={NullPhotoProfile} alt="photo profile" style={{ width: '250px', height: '250px' }}  />:
-                                <Avatar src={`http://localhost:8000/${user.photoProfile}`} alt="photo profile" style={{ width: '250px', height: '250px' }} />
-                            }
-                            <ChangeProfilePicture onUserUpdate={handleUserUpdate} />
-                            <Typography variant="small" fullWidth className="text-justify" color="black">
-                                Maximum file size 1 MB. Allowed file extension are .jpg, .jpeg, .png
-                            </Typography>
-                        </Card>
-                        <ChangePassword onUserUpdate={handleUserUpdate} />
-                    </div>
-                    <Card className="w-full overflow-scroll border-solid border-brown-500 border-2">
-                        <CardHeader floated={false} shadow={false} className="rounded-none mb-5">
-                            <Typography variant="h5" color="blue-gray">
-                                Edit Profile
-                            </Typography>
-                        </CardHeader>
-                        <table className="w-full table-auto">
-                            <tbody>
-                                {tableData.map((item) => (
-                                    <tr key={item.label}>
-                                        <th className="w-20 px-4 text-left">
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-bold"
-                                            >
-                                                {item.label}
-                                            </Typography>
-                                        </th>
-                                        <td className="text-center">
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-bold"
-                                            >
-                                                :
-                                            </Typography>
-                                        </td>
-                                        <td>
-                                            <Typography
-                                                variant="small"
-                                                color="blue-gray"
-                                                className="font-normal mx-1"
-                                            >
-                                                {item.data}
-                                            </Typography>
-                                        </td>
-                                        <td className="w-20 py-2 flex items-center justify-center">
-                                            {item.edit}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </Card>
-                </Card>
+        <div className="h-screen flex flex-col gap-1">
+            <div className="flex w-full items-center gap-3 pt-2 pl-2">
+                <FaUser fontSize={'30px'} />
+                <Typography variant="h3" color="blue-gray">My Profile</Typography>
             </div>
+            <Card className="h-full py-4 px-4 flex flex-col lg:flex-row gap-4">
+                <div className="flex flex-col w-full items-center gap-2 lg:w-96">
+                    <Card className="flex flex-col w-full px-5 items-center gap-2 py-2 border-solid border-gray-300 border-2 lg:w-72">
+                        {
+                            user.photoProfile == null || user.photoProfile == '' ?
+                            <Avatar src={NullPhotoProfile} alt="photo profile" style={{ width: '250px', height: '250px' }}  />:
+                            <Avatar src={`http://localhost:8000/${user.photoProfile}`} alt="photo profile" style={{ width: '250px', height: '250px' }} />
+                        }
+                        <ChangeProfilePicture onUserUpdate={handleUserUpdate} />
+                        <Typography variant="small" fullWidth className="text-justify" color="black">
+                            Maximum file size 1 MB. Allowed file extension are .jpg, .jpeg, .png
+                        </Typography>
+                    </Card>
+                    <ChangePassword onUserUpdate={handleUserUpdate} />
+                </div>
+                <Card className="w-full overflow-scroll border-solid border-gray-300 border-2">
+                    <CardHeader floated={false} shadow={false} className="rounded-none mb-5">
+                        <Typography variant="h5" color="blue-gray">
+                            Edit Profile
+                        </Typography>
+                    </CardHeader>
+                    <table className="w-full table-auto">
+                        <tbody>
+                            {tableData.map((item) => (
+                                <tr key={item.label}>
+                                    <th className="w-20 px-4 text-left">
+                                        <Typography
+                                            variant="small"
+                                            color="blue-gray"
+                                            className="font-bold"
+                                        >
+                                            {item.label}
+                                        </Typography>
+                                    </th>
+                                    <td className="text-center">
+                                        <Typography
+                                            variant="small"
+                                            color="blue-gray"
+                                            className="font-bold"
+                                        >
+                                            :
+                                        </Typography>
+                                    </td>
+                                    <td className="w-full">
+                                        <Typography
+                                            variant="small"
+                                            color="blue-gray"
+                                            className="font-normal mx-1"
+                                        >
+                                            {item.data}
+                                        </Typography>
+                                    </td>
+                                    <td className="w-fit py-2 px-4 flex items-center justify-center">
+                                        {item.edit}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </Card>
+            </Card>
         </div>
     )
 }

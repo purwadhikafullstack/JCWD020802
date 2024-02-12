@@ -65,6 +65,10 @@ export const init = (sequelize) => {
       useProvider: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
+      },
+      isAssigned: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
       }
     },
     {

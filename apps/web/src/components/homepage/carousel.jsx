@@ -1,21 +1,24 @@
 import { Carousel } from "@material-tailwind/react";
+import { useState } from "react";
+import { toast } from "react-toastify";
  
 export function CarouselTransition() {
+  const [carouselLists, setCarouselLists] = useState([])
   return (
     <div className="h-48 sm:h-96">
         <Carousel transition={{ duration: 1 }} className="rounded-xl">
         <img
-            src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
+            src="https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/pageImages/insp_block_715_en_us_16861915970.webp"
             alt="image 1"
             className="h-full w-full object-cover"
         />
         <img
-            src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
+            src="https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/pageImages/insp_block_585_en_us_16817232620.webp"
             alt="image 2"
             className="h-full w-full object-cover"
         />
         <img
-            src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
+            src="https://d2xjmi1k71iy2m.cloudfront.net/dairyfarm/id/pageImages/insp_block_747_en_us_16874122200.webp"
             alt="image 3"
             className="h-full w-full object-cover"
         />

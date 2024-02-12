@@ -1,15 +1,13 @@
-import { Card, CardBody, Dialog, DialogHeader, DialogBody } from "@material-tailwind/react";
+import { Dialog, DialogHeader, DialogBody } from "@material-tailwind/react";
 import { useState } from 'react'
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import YupPassword from "yup-password";
 import { Axios } from "../../../lib/api";
-import { useParams } from "react-router-dom";
 import { toast } from 'react-toastify';
 import { FormFullname } from "../../form/formFullname";
 import { FormBirthdate } from "../../form/formBirthdate";
 import { FormGender } from "../../form/formGender";
-import { FormPassword } from "../../form/formPassword";
 import { SubmitButton } from "../../form/submitButton";
 import { EditButton } from "../../edit/editButton";
 import { FormEmail } from "../../form/formEmail";
