@@ -25,7 +25,13 @@ export function ManageStock() {
     const [warehouseFilter, setWarehouseFilter] = useState('');
     const [productFilter, setProductFilter] = useState('');
 
-    const tableHead = ["Warehouse", "Product", "Stock", " ", ""];
+    const tableHead = [
+        {head: 'Warehouse', value: 'label'},
+        {head: 'Product', value: 'productName'},
+        {head: 'Stock', value: 'stock'},
+        {head: ' ', value: ' '},
+        {head: '', value: ''}
+    ]
 
     const handleStockUpdate = () => {
         setStockUpdate(true)
@@ -54,16 +60,11 @@ export function ManageStock() {
             const response = await Axios.get("stocks/", config)
             setStockList(response.data.stocks)
             setTotalPages(response.data.totalPages);
-            toast.success("Success getting stock data!")
         } catch (error) {
             if (error.response.status == 400) {
                 toast.error('Error Token')
             } else if (error.response.status == 401) {
                 toast.error('Unauthorize (Super Admin only)!')
-            } else if (error.response.status == 402) {
-                toast.error("Warehouse didn't exist!")
-            } else if (error.response.status == 403) {
-                toast.error("Product didn't exist!")
             } else {
                 toast.error("Failed getting stock data!")
             } 
@@ -95,9 +96,9 @@ export function ManageStock() {
                             <tr>
                                 {tableHead.map((head) => (
                                 <th
-                                    key={head}
+                                    key={head.value}
                                     className="cursor-pointer border-b border-2 border-green-600 bg-green-800"
-                                    onClick={() => handleSort(head.toLowerCase())}
+                                    onClick={() => handleSort(head.value)}
                                 >
                                     <div className="flex items-center justify-between p-4">
                                         <Typography
@@ -105,9 +106,9 @@ export function ManageStock() {
                                             color="white"
                                             className="font-bold text-sm leading-none"
                                         >
-                                            {head}
+                                            {head.head}
                                         </Typography>
-                                        {sortBy === head.toLowerCase() && (
+                                        {sortBy === head.value && (
                                             <span>
                                                 {
                                                     sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 

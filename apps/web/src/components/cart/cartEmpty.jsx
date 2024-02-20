@@ -1,6 +1,7 @@
+import { Typography } from '@material-tailwind/react';
 import { Link } from 'react-router-dom';
 
-const CartEmpty = () => {
+export function CartEmpty() {
   return (
     <div className="flex flex-col justify-center items-center gap-5 flex-1">
       <img
@@ -8,9 +9,9 @@ const CartEmpty = () => {
         alt=""
         className="w-64 h-auto"
       />
-      <p className="font-bold text-xl">Whoops! Your cart is empty</p>
+      <Typography className="font-bold text-xl">Whoops! Your cart is empty</Typography>
       <Link
-        to="/"
+        to="/products"
         className="select-none rounded-lg bg-green-500 py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase text-white shadow-md shadow-green-500/20 transition-all hover:shadow-lg hover:shadow-green-500/40 focus:opacity-[0.85] focus:shadow-none active:opacity-[0.85] active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
         type="button"
       >
@@ -19,5 +20,3 @@ const CartEmpty = () => {
     </div>
   );
 };
-
-export default CartEmpty;

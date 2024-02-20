@@ -1,42 +1,23 @@
-import { Avatar, Button, Drawer, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
+import { Avatar, Badge, IconButton, Menu, MenuHandler, MenuItem, MenuList, Typography } from "@material-tailwind/react";
+import { useState } from "react";
 import { FaExchangeAlt } from "react-icons/fa";
 import { FaCartShopping, FaUser } from "react-icons/fa6";
 import { FiLogOut } from "react-icons/fi";
 import { useSelector } from "react-redux";
 import NullPhotoProfile from "../../../assets/null-profile-picture.png";
-import { Axios } from "../../../lib/api";
-import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export function CustomerNavButton() {
     const user = useSelector((state) => state.user.value);
-    const token = localStorage.getItem('token');
+    const quantity = useSelector((state) => state.cart.quantityValue)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [count, setCount] =useState(null)
-
-    const handleOrderCount = async () => {
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        }
-        try {
-            const data = await Axios.get("carts/", config)
-            setCount(data.count)
-            toast.success("Successfully adding item!")
-        } catch (error) {
-            toast.error("Failed adding item!")
-        }
-    }
-
-    useEffect(() => {
-        handleOrderCount()
-    }, [])
+    const navigate = useNavigate()
 
     const handleLogOut = async () => {
         try {
             localStorage.removeItem("token");
             window.location.reload();
         } catch (error) {
-            console.log(error);
         }
     };
 
@@ -61,12 +42,11 @@ export function CustomerNavButton() {
     const customerMenu = (
         <MenuList className="p-1 flex flex-col">
             {customerMenuItems.map((item, key) => {
-            const isLastItem = key === customerMenuItems.length - 1;
-            return (
-                <a href={item.path}>
+                const isLastItem = key === customerMenuItems.length - 1;
+                return (
                     <MenuItem
                         key={item.label}
-                        onClick={ isLastItem ? handleLogOut : ""}
+                        onClick={ isLastItem ? handleLogOut : () => navigate(item.path)}
                         className={`flex items-center gap-2 rounded ${
                             isLastItem
                             ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -83,8 +63,7 @@ export function CustomerNavButton() {
                             {item.label}
                         </Typography>
                     </MenuItem>
-                </a>
-            );
+                );
             })}
         </MenuList>
     );
@@ -93,11 +72,17 @@ export function CustomerNavButton() {
         <div>
             <div className="flex items-center justify-center gap-2">
                 <div className="ml-5 block">
-                    <a href="/carts">
-                        <IconButton variant="text">
-                            <FaCartShopping fontSize={'20px'} />
-                        </IconButton>
-                    </a>
+                    {
+                        quantity == 0 ?
+                        <IconButton variant="text" onClick={() => navigate('/carts')}>
+                            <FaCartShopping color="green" fontSize={'20px'} />
+                        </IconButton> :
+                        <Badge content={quantity} withBorder>
+                            <IconButton variant="text" onClick={() => navigate('/carts')}>
+                                <FaCartShopping color="green" fontSize={'20px'} />
+                            </IconButton>
+                        </Badge>
+                    }
                 </div>
                 <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
                     <MenuHandler>

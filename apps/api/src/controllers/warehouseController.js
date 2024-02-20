@@ -19,10 +19,20 @@ export const getWarehouse = async (req, res) => {
     try {
         const { page, sortBy, sortOrder, searchTerm, province, city } = req.query
 
-        const limit = 10
+        const limit = 8
         const offset = (page - 1) * limit
 
-        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+        let order = [];
+
+        if (sortBy && sortOrder) {
+            if (sortBy === 'city_name') {
+                order = [[{ model: City }, sortBy, sortOrder]];
+            } else if (sortBy === 'province') {
+                order = [[{ model: City }, 'Province', sortBy, sortOrder]];
+            } else {
+                order = [[sortBy, sortOrder]];
+            }
+        }
 
         const result = await Warehouse.findAndCountAll({
             include: [

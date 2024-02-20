@@ -1,8 +1,6 @@
-import { NavBar } from "./components/navbar/navbar";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { HomePage } from "./pages/home";
 import { ProductPage } from "./pages/product";
-import { Footer } from "./components/footer";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { Axios } from "./lib/api";
@@ -11,15 +9,16 @@ import { RegisterUserData } from "./components/navbar/register/registerUserData"
 import Cart from "./pages/cart";
 import { DashboardCustomer } from "./pages/dashboardCustomer";
 import { EmailVerification } from "./components/edit/verifyEmail";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import "leaflet/dist/leaflet.css"
 import { ResetPassword } from "./components/edit/resetPassword";
 import { DashboardAdmin } from "./pages/dashboardAdmin";
-import { RequiredAdmin } from "./components/requiredAdmin";
-import { RequiredCustomer } from "./components/requiredCustomer";
-import { RequiredNotAdmin } from "./components/requiredNotAdmin";
-import { RequiredSuperAdmin } from "./components/requiredSuperAdmin";
+import { RequiredAdmin } from "./components/auth/requiredAdmin";
+import { RequiredCustomer } from "./components/auth/requiredCustomer";
+import { RequiredNotAdmin } from "./components/auth/requiredNotAdmin";
+import { RequiredSuperAdmin } from "./components/auth/requiredSuperAdmin";
+import { Transaction } from "./pages/transaction";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +34,7 @@ const router = createBrowserRouter([
         element: <RequiredCustomer />,
         children: [
           { path: '/dashboard-customer', element: <DashboardCustomer /> },
+          { path: '/transaction', element: <Transaction /> },
           { path: '/carts', element: <Cart /> },
         ],
       }
@@ -74,9 +74,7 @@ function App() {
         }
       );
       dispatch(setData(response.data));
-      toast.success('Welcome!')
     } catch (error) {
-      toast.error('Failed to keep login!')
     }
   };
 
@@ -85,15 +83,9 @@ function App() {
   }, []);
 
   return (
-    <div className="bg-gray-100 h-screen">
+    <div className="bg-gray-100 ">
       <ToastContainer />
-      <div className="flex flex-col justify-between h-full">
-        <div>
-          { localStorage.getItem("adminToken") ? '' : <NavBar /> }
-          <RouterProvider router={router} />
-        </div>
-        { localStorage.getItem("adminToken") ? '' : <Footer /> }
-      </div>
+      <RouterProvider router={router} />
     </div>
   );
 }

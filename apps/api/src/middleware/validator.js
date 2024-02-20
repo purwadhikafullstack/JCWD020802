@@ -8,7 +8,7 @@ export const checkLogin = async (req, res, next) => {
             .run(req)
         await query('password')
             .notEmpty()
-            .withMessage('password is required!')
+            .withMessage('Password is required!')
             .run(req)
 
         const validation = validationResult(req)
@@ -56,15 +56,15 @@ export const checkRegisterUser = async (req, res, next) => {
     try {
         await body('fullname')
             .notEmpty()
-            .withMessage('fullname is required!')
+            .withMessage('Fullname is required!')
             .run(req)
         await body('gender')
             .notEmpty()
-            .withMessage('gender is required!')
+            .withMessage('Gender is required!')
             .run(req)
         await body('password')
             .notEmpty()
-            .withMessage('password is required!')
+            .withMessage('Password is required!')
             .run(req)
 
         const validation = validationResult(req)

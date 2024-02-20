@@ -13,7 +13,7 @@ export const getDeliveryCost = async (req, res) => {
             },
             {
                 headers: {
-                    'key': '1c0a173111985e49ddd6d798c4c7ec9f',
+                    'key': process.env.RAJAONGKIR_API,
                     'content-type': 'application/x-www-form-urlencoded',
                 },
             }

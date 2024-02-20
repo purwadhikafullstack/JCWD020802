@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { verifyToken } from "../middleware/auth";
 import { changePassword, editBirthdate, editEmail, editFullname, editGender, editUsername, resetPassword, sendResetPasswordEmail, updatePhotoProfile, verifyEmail } from '../controllers/editController';
-import { multerUploadProfile } from "../middleware/multerProfile";
+import { multerUpload } from "../middleware/multer";
 import { checkRegisterEmail } from '../middleware/validator';
 
 const editRouter = Router()
@@ -15,6 +15,6 @@ editRouter.patch("/gender", verifyToken, editGender)
 editRouter.patch("/email", verifyToken, editEmail)
 editRouter.patch("/verify-email", verifyToken, verifyEmail)
 editRouter.patch("/change-password", verifyToken, changePassword)
-editRouter.patch("/profile-picture", verifyToken, multerUploadProfile().single('file'), updatePhotoProfile)
+editRouter.patch("/profile-picture", verifyToken, multerUpload().single('file'), updatePhotoProfile)
 
 export { editRouter }

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import { FaSearch } from "react-icons/fa";
 import axios from "axios";
-import { Input, Typography } from "@material-tailwind/react";
+import { Input, List, ListItem, Typography } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosition } from "../../redux/positionSlice";
 import { toast } from 'react-toastify';
@@ -41,7 +41,7 @@ export function PinLocation() {
     const fetchSuggestions = async () => {
         try {
             const response = await axios.get(
-                `https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&countrycode=id&key=00e4f62e57e6487ea3db9807a275d3fe`
+                `https://api.opencagedata.com/geocode/v1/json?q=${searchLocation}&countrycode=id&key=${import.meta.env.VITE_GEOCODE_API}`
             );
 
             const results = response.data.results;
@@ -56,7 +56,6 @@ export function PinLocation() {
                 setSuggestions([]);
             }
         } catch (error) {
-            toast.error("Error fetching suggestions");
         }
     };
 
@@ -108,13 +107,13 @@ export function PinLocation() {
                     />
                 </div>
                 {showSuggestions && (
-                    <ul>
+                    <List>
                         {suggestions.map((suggestion, index) => (
-                            <li key={index} onClick={() => selectSuggestion(suggestion)}>
+                            <ListItem key={index} onClick={() => selectSuggestion(suggestion)}>
                                 {suggestion.label}
-                            </li>
+                            </ListItem>
                         ))}
-                    </ul>
+                    </List>
                 )}
             </div>
             <MapContainer center={position} zoom={13} ref={mapRef} style={{ height: "300px" }}>

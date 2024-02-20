@@ -17,7 +17,7 @@ export const sendResetPasswordEmail = async (req, res) => {
         if (user) {
             const payload = { id: user.id }
             const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-            const data = fs.readFileSync(path.join(__dirname, '../../resetPasswordEmail.html'), 'utf-8')
+            const data = fs.readFileSync(path.join(__dirname, '../../mail/resetPasswordEmail.html'), 'utf-8')
             const tempCompile = await handlebars.compile(data)
             const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}reset-password/${token}` })
     
@@ -163,14 +163,14 @@ export const editEmail = async (req, res) => {
 
         const payload = { id: req.user.id }
         const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-        const data = fs.readFileSync(path.join(__dirname, '../../verifyEmail.html'), 'utf-8')
+        const data = fs.readFileSync(path.join(__dirname, '../../mail/verifyNewEmail.html'), 'utf-8')
         const tempCompile = await handlebars.compile(data)
         const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}verify-email/${token}` })
 
         await transporter.sendMail({
             from: process.env.GMAIL_EMAIL,
             to: email,
-            subject: 'Email Verification',
+            subject: 'New Email Verification',
             html: tempResult
         })
 
@@ -245,7 +245,7 @@ export const changePassword = async (req, res) => {
 
 export const updatePhotoProfile = async (req, res) => {
     try {
-        await User.update({ photoProfile: req.file?.path }, {
+        await User.update({ photoProfile: req.file?.filename }, {
             where: {
                 id: req.user.id
             }

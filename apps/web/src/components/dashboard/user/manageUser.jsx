@@ -53,7 +53,6 @@ export function ManageUser() {
             const response = await Axios.get("users/", config)
             setUserList(response.data.users)
             setTotalPages(response.data.totalPages);
-            toast.success("Success getting users data!")
         } catch (error) {
             if (error.response.status == 400) {
                 toast.error('Error Token')

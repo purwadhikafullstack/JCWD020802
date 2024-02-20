@@ -16,7 +16,7 @@ export const getCategory = async (req, res) => {
     try {
         const { page, sortBy, sortOrder, category } = req.query
 
-        const limit = 10
+        const limit = 8
         const offset = (page - 1) * limit
 
         const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
@@ -57,7 +57,7 @@ export const addCategory = async (req, res) => {
         if (checkCategory == null) {
             await ProductCategory.create({ 
                 categoryName,
-                categoryPicture: req.file?.path
+                categoryPicture: req.file?.filename
             })
             return res.status(200).send({status: "Category Successfully Added!"});
         } else {
@@ -87,7 +87,7 @@ export const editCategoryById = async (req, res) => {
 
         await ProductCategory.update({ 
             categoryName,
-            categoryPicture: req.file?.path
+            categoryPicture: req.file?.filename
         }, {
             where: [
                 { id },

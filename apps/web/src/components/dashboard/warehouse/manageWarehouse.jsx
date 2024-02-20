@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { EditWarehouseAddressButton } from "../../edit/editWarehouseAddressButton";
 import { Axios } from "../../../lib/api";
 import { MoveToTrashWarehouse } from "./moveToTrashWarehouse";
-import { FilterProvinceCity } from "../filterProvinceCity";
+import { FilterProvinceCity } from "../address/filterProvinceCity";
 import { FaArrowDownShortWide, FaArrowDownUpAcrossLine, FaArrowUpShortWide } from "react-icons/fa6";
 import { PaginationButton } from "../../paginationButton";
 import { Search } from "../search";
@@ -23,7 +23,14 @@ export function ManageWarehouse() {
     const [provinceFilter, setProvinceFilter] = useState('');
     const [cityFilter, setCityFilter] = useState('');
 
-    const tableHead = ["Name", "Province", "City", "Address", " ", ""];
+    const tableHead = [
+        {head: "Name", value:"label"}, 
+        {head: "Province", value:"province"},
+        {head: "City", value:"city_name"},
+        {head: "Address", value:"address"},
+        {head: " ", value:" "},
+        {head: "", value:""}
+    ];
 
     const handleWarehouseUpdate = () => {
         setWarehouseUpdate(true)
@@ -48,11 +55,11 @@ export function ManageWarehouse() {
             headers: { Authorization: `Bearer ${adminToken}` },
             params: { page: currentPage, sortBy, sortOrder, searchTerm, province: provinceFilter, city: cityFilter }
         }
+
         try {
             const response = await Axios.get("warehouses/list", config)
             setWarehouseList(response.data.warehouses)
             setTotalPages(response.data.totalPages);
-            toast.success("Success getting warehouse address data!")
         } catch (error) {
             if (error.response.status == 400) {
                 toast.error('Error Token')
@@ -88,9 +95,9 @@ export function ManageWarehouse() {
                             <tr>
                                 {tableHead.map((head) => (
                                 <th
-                                    key={head}
+                                    key={head.value}
                                     className="cursor-pointer border-b border-2 border-green-600 bg-green-800"
-                                    onClick={() => handleSort(head.toLowerCase())}
+                                    onClick={() => handleSort(head.value)}
                                 >
                                     <div className="flex items-center justify-between p-4">
                                         <Typography
@@ -98,9 +105,9 @@ export function ManageWarehouse() {
                                             color="white"
                                             className="font-bold text-sm leading-none"
                                         >
-                                            {head}
+                                            {head.head}
                                         </Typography>
-                                        {sortBy === head.toLowerCase() && (
+                                        {sortBy === head.value && (
                                             <span>
                                                 {
                                                     sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 

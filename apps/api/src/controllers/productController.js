@@ -18,7 +18,7 @@ export const getProduct = async (req, res) => {
     try {
         const { page, sortBy, sortOrder, searchTerm, category } = req.query
 
-        const limit = 10
+        const limit = 8
         const offset = (page - 1) * limit
 
         const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
@@ -85,7 +85,7 @@ export const addProduct = async (req, res) => {
                 productDetail,
                 productPrice,
                 ProductCategoryId,
-                productMainPicture: req.file?.path
+                productMainPicture: req.file?.filename
             })
             return res.status(200).send({status: "Product Successfully Added!"});
         } else {
@@ -100,7 +100,7 @@ export const addProduct = async (req, res) => {
 export const editProductById = async (req, res) => {
     try {
         const { id } = req.params
-        const { productName, productWeight, productDetail, productPrice, category } = req.body
+        const { productName, productWeight, productDetail, productPrice, ProductCategoryId } = req.body
 
         const checkProduct = await Product.findOne({
             where: [
@@ -113,23 +113,13 @@ export const editProductById = async (req, res) => {
             res.status(401).send({status: "Product doesn't exist!"});
         }
 
-        const findCategory = await ProductCategory.findOne({
-            where: [
-                { categoryName: category },
-                { isDeleted: false }
-            ]
-        })
-
-        if (!findCategory) {
-            return res.status(402).send({status: "Category didn't exist!"});
-        }
-
         await Product.update({ 
             productName,
-                productWeight,
-                productDetail,
-                productPrice,
-                ProductCategoryId: findCategory.id 
+            productWeight,
+            productDetail,
+            productPrice,
+            ProductCategoryId,
+            productMainPicture: req.file?.filename
         }, {
             where: [
                 { id },
