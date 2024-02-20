@@ -7,10 +7,20 @@ export const getStock = async (req, res) => {
     try {
         const { page, sortBy, sortOrder, searchTerm, warehouse, product } = req.query
 
-        const limit = 10
+        const limit = 8
         const offset = (page - 1) * limit
 
-        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+        let order = [];
+
+        if (sortBy && sortOrder) {
+            if (sortBy === 'label') {
+                order = [[{ model: Warehouse }, sortBy, sortOrder]];
+            } else if (sortBy === 'productName') {
+                order = [[{ model: Product }, sortBy, sortOrder]];
+            } else {
+                order = [[sortBy, sortOrder]];
+            }
+        }
 
         const result = await Stock.findAndCountAll({
             include: [
@@ -51,19 +61,6 @@ export const getStock = async (req, res) => {
     }
 };
 
-export const getStockByProductId = async (req, res) => {
-    try {
-        const { ProductId } = req.params
-        const result = await Stock.findAll({
-            where: { ProductId }
-        })
-        res.status(200).send(result);
-    } catch (error) {
-        console.log(error);
-        res.status(400).send({ message: error.message });
-    }
-}
-
 export const addNewStock = async (req, res) => {
     try {
         const { stock, WarehouseId, ProductId } = req.body
@@ -82,6 +79,13 @@ export const addNewStock = async (req, res) => {
             ]
         })
 
+        const checkStock = await Stock.findOne({
+            where: [
+                { WarehouseId },
+                { ProductId }
+            ]
+        })
+
         if (!checkWarehouse) {
             return res.status(402).send({status: "Warehouse didn't exist!"});
         }
@@ -90,10 +94,32 @@ export const addNewStock = async (req, res) => {
             return res.status(403).send({status: "Product didn't exist!"});
         }
 
+        if (checkStock) {
+            return res.status(404).send({status: "Stock already exist!"});
+        }
+
         await Stock.create({
             stock,
             WarehouseId,
             ProductId
+        })
+
+        const productStock = await Stock.findAll({
+            where: [
+                { ProductId },
+                { isDeleted: false }
+            ]
+        })
+
+        let totalStock = 0;
+        productStock.forEach((item) => {
+            totalStock += item.stock;
+        });
+
+        await Product.update({
+            totalStock
+        }, {
+            where: { id: ProductId }
         })
         return res.status(200).send({status: "New Stock Successfully Added!"});
     } catch (error) {
@@ -139,6 +165,24 @@ export const editStockById = async (req, res) => {
                 { isDeleted: false }
             ]
         })
+
+        const productStock = await Stock.findAll({
+            where: [
+                { ProductId },
+                { isDeleted: false }
+            ]
+        })
+
+        let totalStock = 0;
+        productStock.forEach((item) => {
+            totalStock += item.stock;
+        });
+
+        await Product.update({
+            totalStock
+        }, {
+            where: { id: ProductId }
+        })
         return res.status(200).send({status: "Stock successfully updated!"})
     } catch (error) {
         console.log(error);
@@ -167,6 +211,24 @@ export const trashStockById = async (req, res) => {
                 { id },
                 { isDeleted: false }
             ]
+        })
+
+        const productStock = await Stock.findAll({
+            where: [
+                { ProductId: checkStock.ProductId },
+                { isDeleted: false }
+            ]
+        })
+
+        let totalStock = 0;
+        productStock.forEach((item) => {
+            totalStock += item.stock;
+        });
+
+        await Product.update({
+            totalStock
+        }, {
+            where: { id: checkStock.ProductId }
         })
         return res.status(200).send({status: "Stock moved to trash!"})
     } catch (error) {

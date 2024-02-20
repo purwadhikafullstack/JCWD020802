@@ -95,7 +95,7 @@ export function EditCategoryButton({ category, handleCategoryUpdate }) {
                                             {
                                                 previewImage == null ?
                                                 <img 
-                                                    src={`http://localhost:8000/${category.categoryPicture}`} 
+                                                    src={`${import.meta.env.VITE_LOCAL_HOST}${category.categoryPicture}`} 
                                                     alt="Preview" 
                                                     className="max-w-full h-64 rounded-lg py-2" 
                                                 /> :

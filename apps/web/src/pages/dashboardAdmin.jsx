@@ -5,7 +5,7 @@ import { ManageStock } from "../components/dashboard/stock/manageStock";
 import { Order } from "../components/dashboard/order";
 import { Payment } from "../components/dashboard/payment";
 import { useLocation, useNavigate } from "react-router-dom";
-import { AdminProfile } from "../components/dashboard/profileAdmin";
+import { AdminProfile } from "../components/dashboard/profile/profileAdmin";
 import { SideBar } from "../components/dashboard/sidebar";
 import { ManageWarehouse } from "../components/dashboard/warehouse/manageWarehouse";
 

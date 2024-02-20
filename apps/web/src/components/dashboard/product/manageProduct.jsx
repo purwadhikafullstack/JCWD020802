@@ -21,7 +21,15 @@ export function ManageProduct() {
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
 
-    const tableHead = ["Name", "Weight (Kg)", "Detail", "Price (IDR)", " ", ""];
+    const tableHead = [
+        {head: 'Name', value: 'productName'},
+        {head: 'Weight (Kg)', value: 'productWeight'},
+        {head: 'Detail', value: 'productDetail'},
+        {head: 'Price (IDR)', value: 'productPrice'},
+        {head: 'Total Stock', value: 'totalStock'},
+        {head: ' ', value: ' '},
+        {head: '', value: ''}
+    ]
 
     const handleProductUpdate = () => {
         setProductUpdate(true)
@@ -50,7 +58,6 @@ export function ManageProduct() {
             const response = await Axios.get("products/list", config)
             setProductList(response.data.products)
             setTotalPages(response.data.totalPages);
-            toast.success("Success getting product data!")
         } catch (error) {
             if (error.response.status == 400) {
                 toast.error('Error Token')
@@ -69,7 +76,7 @@ export function ManageProduct() {
     }, [productUpdate, currentPage, sortBy, sortOrder, searchTerm, categoryFilter]);
 
     return (
-        <Card className="h-full py-4 px-4 flex flex-col gap-4">
+        <Card className="py-4 px-4 flex flex-col gap-4">
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} setCurrentPage={setCurrentPage} />
             <div className="w-full flex flex-col items-center justify-center gap-2 md:flex-row">
                 <FilterCategory setCategoryFilter={setCategoryFilter} setCurrentPage={setCurrentPage} />
@@ -81,9 +88,9 @@ export function ManageProduct() {
                         <tr>
                             {tableHead.map((head) => (
                             <th
-                                key={head}
+                                key={head.value}
                                 className="cursor-pointer border-b border-2 border-green-600 bg-green-800"
-                                onClick={() => handleSort(head.toLowerCase())}
+                                onClick={() => handleSort(head.value)}
                             >
                                 <div className="flex items-center justify-between p-4">
                                     <Typography
@@ -91,9 +98,9 @@ export function ManageProduct() {
                                         color="white"
                                         className="font-bold text-sm leading-none"
                                     >
-                                        {head}
+                                        {head.head}
                                     </Typography>
-                                    {sortBy === head.toLowerCase() && (
+                                    {sortBy === head.value && (
                                         <span>
                                             { sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 
                                                 sortOrder === 'asc' ? <FaArrowUpShortWide color="white" /> : <FaArrowDownShortWide color="white" /> }
@@ -146,11 +153,20 @@ export function ManageProduct() {
                                         </Typography>
                                     </td>
                                     <td className={classes}>
+                                        <Typography
+                                            variant="small"
+                                            color="blue-gray"
+                                            className="font-normal text-center"
+                                        >
+                                            {product.totalStock === null ? 0 : product.totalStock}
+                                        </Typography>
+                                    </td>
+                                    <td className={`${classes} bg-green-50/50`}>
                                         <div className="flex justify-center">
                                             <EditProductButton product={product} handleProductUpdate={handleProductUpdate} />
                                         </div>
                                     </td>
-                                    <td className={`${classes} bg-green-50/50`}>
+                                    <td className={classes}>
                                         <div className="flex justify-center">
                                             <MoveToTrashProduct product={product} handleProductUpdate={handleProductUpdate} />
                                         </div>

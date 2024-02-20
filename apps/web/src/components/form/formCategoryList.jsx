@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSelectedCategory } from "../../redux/productSlice";
 
 export function FormCategoryList({ setFieldValue }) {
-    const selectedCategory = useSelector((state) => state.position.categoryValue);
+    const selectedCategory = useSelector((state) => state.product.categoryValue);
     const adminToken = localStorage.getItem('adminToken');
     const [categories, setCategories] = useState([]);
     const dispatch = useDispatch()

@@ -3,12 +3,13 @@ import Logo from "../../assets/Logo with name.png"
 import IconLogo from "../../assets/Logo.png";
 import { FaUserCircle, FaUsers, FaWarehouse, FaBox, FaBoxes, FaShoppingCart } from "react-icons/fa";
 import { GrTransaction } from "react-icons/gr";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiLogOut } from "react-icons/fi";
 import { useSelector } from "react-redux";
  
 export function SideBar() {
     const user = useSelector((state) => state.user.value)
+    const navigate = useNavigate()
 
     const buttonList = [
         {
@@ -62,9 +63,9 @@ export function SideBar() {
     const handleLogOut = async () => {
         try {
             localStorage.removeItem("adminToken");
+            navigate('/')
             window.location.reload();
         } catch (error) {
-            console.log(error);
         }
     };
 

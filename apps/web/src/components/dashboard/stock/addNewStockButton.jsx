@@ -48,8 +48,16 @@ export function AddNewStockButton({ handleStockUpdate }) {
             toast.success('Stock successfully added!');
         } catch (error) {
             handleCloseStock()
-            if (error.response.status == 401) {
-                toast.error('Stock is already exist!');
+            if (error.response.status == 400) {
+                toast.error('Error Token')
+            } else if (error.response.status == 401) {
+                toast.error('Unauthorize (Super Admin only)!')
+            } else if (error.response.status == 402) {
+                toast.error("Warehouse didn't exist!")
+            } else if (error.response.status == 403) {
+                toast.error("Product didn't exist!")
+            } else if (error.response.status == 404) {
+                toast.error("Stock already exist!")
             } else {
                 toast.error('Failed to add stock. Please try again.')
             }

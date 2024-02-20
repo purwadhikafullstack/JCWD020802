@@ -71,7 +71,17 @@ export const getAddressById = async (req, res) => {
         const limit = 5
         const offset = (page - 1) * limit
 
-        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+        let order = [];
+
+        if (sortBy && sortOrder) {
+            if (sortBy === 'city_name') {
+                order = [[{ model: City }, sortBy, sortOrder]];
+            } else if (sortBy === 'province') {
+                order = [[{ model: City }, 'Province', sortBy, sortOrder]];
+            } else {
+                order = [[sortBy, sortOrder]];
+            }
+        }
 
         const result = await Address.findAndCountAll({
             include: [
@@ -136,6 +146,34 @@ export const getByUserId = async (req, res) => {
                 }
             ],
             where: { UserId } 
+        })
+        res.status(200).send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send({ message: error.message });
+    }
+}
+
+export const getUserMainAddress = async (req, res) => {
+    try {
+        const { UserId } = req.params
+        const result = await Address.findOne({
+            include: [
+                {
+                    model: City,
+                    attributes: ['type', 'city_name', 'ProvinceId'],
+                    include: [
+                        {
+                            model: Province,
+                            attributes: ['province']
+                        }
+                    ]
+                }
+            ],
+            where: [
+                { UserId }, 
+                { isMain: true }
+            ] 
         })
         res.status(200).send(result);
     } catch (error) {
@@ -261,6 +299,8 @@ export const changeMainAddressById = async (req, res) => {
             { UserId },
             { isMain: false }
         ]})
+
+        return res.status(200).send({status: "Main Address successfully changed!"})
 
     } catch (error) {
         console.log(error);

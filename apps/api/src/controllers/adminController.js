@@ -6,36 +6,71 @@ import handlebars from "handlebars";
 import transporter from "../middleware/transporter";
 import { Op } from 'sequelize';
 import Warehouse from "../models/warehouse";
+import path from "path";
 
 export const getWHAdmin = async (req, res) => {
     try {
-        const { page, sortBy, sortOrder, searchTerm, gender } = req.query
+        const { page, sortBy, sortOrder, searchTerm, warehouse } = req.query
 
         const limit = 8
         const offset = (page - 1) * limit
 
-        const order = sortBy && sortOrder ? [[sortBy, sortOrder]] : [];
+        let order = [];
+
+        if (sortBy && sortOrder) {
+            if (sortBy === 'label') {
+                order = [[{ model: WarehouseAdmin }, 'Warehouse', sortBy, sortOrder]];
+            } else {
+                order = [[sortBy, sortOrder]];
+            }
+        }
+
+        const includeClause = {
+            model: WarehouseAdmin,
+            include: warehouse === undefined || warehouse === '' || warehouse === 'Not Assigned Yet' ? 
+                {
+                    model: Warehouse,
+                    attributes: ['label'],
+                } :
+                {
+                    model: Warehouse,
+                    attributes: ['label'],
+                    where: { label: warehouse },
+                }
+        }
+
+        const whereClause = 
+        warehouse === 'Not Assigned Yet' ? 
+        {
+            [Op.and]: [
+                { role: 'Warehouse Admin' },
+                { isDeleted: false },
+                { isAssigned: false }
+            ],
+            ...(searchTerm && {
+                [Op.or]: [
+                    { fullname: { [Op.like]: `%${searchTerm}%` } },
+                ],
+            }),
+        } :
+        {
+            [Op.and]: [
+                { role: 'Warehouse Admin' },
+                { isDeleted: false }
+            ],
+            ...(searchTerm && {
+                [Op.or]: [
+                    { fullname: { [Op.like]: `%${searchTerm}%` } },
+                ],
+            }),
+        };
 
         const result = await User.findAndCountAll({
-            include : {
-                model: WarehouseAdmin,
-                include : {
-                    model: Warehouse,
-                    attributes: ['label']
-                }
-            },
-            where: {
-                [Op.and]: [
-                    { role: 'Warehouse Admin' },
-                    { isDeleted: false }
-                ],
-                ...(gender && { gender }),
-                ...(searchTerm && {
-                    [Op.or]: [
-                        { fullname: { [Op.like]: `%${searchTerm}%` } }
-                    ],
-                }),
-            }, offset, limit, order
+            include: includeClause,
+            where: whereClause,
+            offset,
+            limit,
+            order,
         });
 
         const totalPages = Math.ceil(result.count / limit)
@@ -123,9 +158,9 @@ export const sendRegisterWHAdminEmail = async (req, res) => {
             });
             const payload = { id: result.id }
             const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-            const data = fs.readFileSync('./verifyRegisterEmail.html', 'utf-8')
+            const data = fs.readFileSync(path.join(__dirname, '../../mail/verifyRegisterEmail.html'), 'utf-8')
             const tempCompile = await handlebars.compile(data)
-            const tempResult = tempCompile({ email: email, link: `http://localhost:5173/register-user/${token}` })
+            const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}register-user/${token}` })
 
             await transporter.sendMail({
                 from: process.env.GMAIL_EMAIL,

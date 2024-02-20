@@ -144,7 +144,7 @@ export const sendRegisterEmail = async (req, res) => {
             const result = await User.create({ email });
             const payload = { id: result.id }
             const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
-            const data = fs.readFileSync(path.join(__dirname, '../../verifyRegisterEmail.html'), 'utf-8')
+            const data = fs.readFileSync(path.join(__dirname, '../../mail/verifyRegisterEmail.html'), 'utf-8')
             const tempCompile = await handlebars.compile(data)
             const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}register-user/${token}` })
 
@@ -250,7 +250,7 @@ export const resendVerificationEmail = async (req, res) => {
                 const payload = { id: user.id }
                 const token = jwt.sign(payload, 'DistrictKayu', { expiresIn: '1h' })
                 if (user.isFullyRegistered) {
-                    const data = fs.readFileSync(path.join(__dirname, '../../verifyEmail.html'), 'utf-8')
+                    const data = fs.readFileSync(path.join(__dirname, '../../mail/verifyEmail.html'), 'utf-8')
                     const tempCompile = await handlebars.compile(data)
                     const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}verify-email/${token}` })
     
@@ -263,7 +263,7 @@ export const resendVerificationEmail = async (req, res) => {
     
                     return res.status(200).send({status: "Email Sent!"});
                 } else {
-                    const data = fs.readFileSync(path.join(__dirname, '../../verifyRegisterEmail.html'), 'utf-8')
+                    const data = fs.readFileSync(path.join(__dirname, '../../mail/verifyRegisterEmail.html'), 'utf-8')
                     const tempCompile = await handlebars.compile(data)
                     const tempResult = tempCompile({ email: email, link: `${process.env.LOCAL_LINK}register-user/${token}` })
     

@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import SelectAddressButton from "./selectAddressButton";
+import { ChangeAddressButton } from "./changeAddressButton";
 import { Button, Card, CardBody, Typography } from "@material-tailwind/react";
 import { Axios } from "../../lib/api";
 import { toast } from "react-toastify";
 import Select from 'react-select';
-import axios from "axios";
+import { useSelector } from "react-redux";
+import { ClipLoader } from "react-spinners";
 
-const CartPrice = ({ price, quantity, weight }) => {
+export function CartPrice({ price, quantity, weight }) {
   const token = localStorage.getItem('token');
+  const user = useSelector((state) => state.user.value);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [warehouses, setWarehouses] = useState(null)
   const [selectedDestination, setSelectedDestination] = useState(null)
@@ -15,6 +17,7 @@ const CartPrice = ({ price, quantity, weight }) => {
   const [services, setServices] = useState(null);
   const [selectedService, setSelectedService] = useState(null);
   const [totalPrice, setTotalPrice] = useState(null);
+  const [loading, setLoading] = useState(false);
   
   const courierOptions = [
     { label: "JNE", value: "jne" },
@@ -23,25 +26,33 @@ const CartPrice = ({ price, quantity, weight }) => {
   ];
 
   const getWarehouse = async () => {
-    const config = {
-      headers: { Authorization: `Bearer ${token}` }
-    }
     try {
-      const result = await Axios.get("warehouses", config)
-      setWarehouses(result.data)
-      toast.success("Success getting warehouse data!")
+      const result = await Axios.get("warehouses", { headers: { Authorization: `Bearer ${token}` } });
+      setWarehouses(result.data);
     } catch (error) {
-      toast.error("Failed getting warehouse data!")
+      toast.error("Failed getting warehouse data!");
     }
-  }
+  };
+
+  const getMainAddress = async () => {
+    try {
+      if (!selectedAddress) {
+        const result = await Axios.get(`addresses/main/${user.id}`, { headers: { Authorization: `Bearer ${token}` } });
+        setSelectedAddress(result.data);
+      }
+    } catch (error) {
+      toast.error("Your account still doesn't have a shipping address!");
+      toast.error("Please create a shipping address first!");
+    }
+  };
 
   useEffect(() => {
-    getWarehouse()
+    getWarehouse(),
+    getMainAddress()
   }, [token])
 
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371;
-
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
 
@@ -51,9 +62,7 @@ const CartPrice = ({ price, quantity, weight }) => {
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
     const distance = R * c;
-
 
     return distance;
   }
@@ -63,12 +72,7 @@ const CartPrice = ({ price, quantity, weight }) => {
     let nearestDestination = null;;
 
     for (const destination of destinations) {
-      const distance = calculateDistance(
-        originLat,
-        originLon,
-        destination.latitude,
-        destination.longtitude
-      );
+      const distance = calculateDistance(originLat, originLon, destination?.latitude, destination?.longtitude);
 
       if (distance < nearestDistance) {
         nearestDistance = distance;
@@ -90,38 +94,23 @@ const CartPrice = ({ price, quantity, weight }) => {
     }
   }, [selectedAddress]);
 
-  const handleSelectAddress = (address) => {
-    setSelectedAddress(address);
-  };
+  const handleSelectAddress = (address) => setSelectedAddress(address);
 
   const getServices = async () => {
-    const apiKey = import.meta.env.RAJAONGKIR_API;
-
-    const config = {
-      headers: {
-        "key": apiKey,
-        "content-type": "application/x-www-form-urlencoded"
-      },
-    };
-
+    setLoading(true);
     const requestBody = {
       origin: selectedAddress.CityId,
       destination: selectedDestination.CityId,
       weight: weight,
-      courier: selectedCourier.value,
+      courier: selectedCourier.value
     };
-
     try {
-      const response = await Axios.post(
-        "rajaongkir/cost",
-        requestBody,
-        config
-      );
-
+      const response = await Axios.post("rajaongkir/cost", requestBody);
       setServices(response.data.rajaongkir.results[0]);
     } catch (error) {
-      console.log(error);
       toast.error("Failed getting shipping cost!");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -129,9 +118,7 @@ const CartPrice = ({ price, quantity, weight }) => {
     getServices()
   }, [selectedCourier])
 
-  const handleSelectService = (service) => {
-    setSelectedService(service);
-  };
+  const handleSelectService = (service) => setSelectedService(service);
 
   useEffect(() => {
     if (selectedService) {
@@ -145,76 +132,63 @@ const CartPrice = ({ price, quantity, weight }) => {
       <Typography variant="h5" className="mb-2">Order Summary</Typography>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between">
-          <Typography variant="paragraph" className="font-bold">
-            Items ({quantity})
-          </Typography>
-          <Typography variant="paragraph" className="font-normal">
-            {price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
-          </Typography>
+          <Typography variant="paragraph" className="font-bold">Items ({quantity})</Typography>
+          <Typography variant="paragraph" className="font-normal">{price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</Typography>
         </div>
         <div className="flex justify-between">
           <Typography variant="paragraph" className="font-bold">Total Weight</Typography>
-          <Typography variant="paragraph" className="font-normal">
-            { weight / 1000 } Kg
-          </Typography>
+          <Typography variant="paragraph" className="font-normal">{ weight / 1000 } Kg</Typography>
         </div>
       </div>
-      <SelectAddressButton onSelectAddress={handleSelectAddress} />
       {selectedAddress && (
         <div className="flex flex-col mt-4">
           <Card className="w-full">
           <Typography variant="h6">Selected Address:</Typography>
             <CardBody>
-              <Typography variant="h6">
-                {selectedAddress.label}
-              </Typography>
-              <Typography variant="lead" className="text-base">
-                {selectedAddress.City.Province.province}, {selectedAddress.City.city_name}
-              </Typography>
+              <Typography variant="h6">{selectedAddress.label}</Typography>
+              <Typography variant="lead" className="text-base">{selectedAddress.City.Province.province}, {selectedAddress.City.city_name}</Typography>
             </CardBody>
           </Card>
         </div>
       )}
+      <ChangeAddressButton onSelectAddress={handleSelectAddress} setSelectedCourier={setSelectedCourier} setServices={setServices} setSelectedService={setSelectedService} />
       <div className="flex flex-col mt-4">
         <Typography variant="h6">Select Courier:</Typography>
-        <Select
+        <Select 
           placeholder="Courier..."
           options={courierOptions}
           value={selectedCourier}
           onChange={(value) => setSelectedCourier(value)}
           isClearable
         />
-        {services && (
-        <div className="flex flex-col mt-4">
-          <Typography variant="h6">Select Service:</Typography>
-          <Select
-            placeholder="Service..."
-            options={services.costs.map((service) => ({
-              label: `${service.service} - ${service.cost[0].value.toLocaleString('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-              })} - ETA: ${service.cost[0].etd}`,
-              value: service.cost[0].value,
-            }))}
-            onChange={(value) => handleSelectService(value)}
-          />
-        </div>
-      )}
+        {selectedCourier && (
+          <div className="flex flex-col mt-4">
+            <Typography variant="h6">Select Service:</Typography>
+            {loading ? (
+              <div className="flex justify-center items-center h-20">
+                <ClipLoader color="#3B82F6" loading={loading} size={35} />
+              </div> 
+            ) : ( services && (
+              <Select
+                placeholder="Service..."
+                options={services.costs.map((service) => ({
+                  label: `${service.service} - ${service.cost[0].value.toLocaleString('id-ID', {
+                    style: 'currency',
+                    currency: 'IDR',
+                  })} - ETA: ${service.cost[0].etd}`,
+                  value: service.cost[0].value,
+                }))}
+                onChange={(value) => handleSelectService(value)}
+              />
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex justify-between font-bold border-t-2 py-2 my-2">
-        <p>Total Price </p>
-        <p>
-          {totalPrice?.toLocaleString('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-          })}
-        </p>
+        <Typography variant="paragraph" className="font-bold">Total Price </Typography>
+        <Typography variant="paragraph" className="font-bold">{totalPrice?.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}</Typography>
       </div>
-      <Button className="w-full">
-        Checkout
-      </Button>
+      <Button className="w-full" color="green">Checkout</Button>
     </div>
   );
-};
-
-export default CartPrice;
+}

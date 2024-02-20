@@ -36,6 +36,10 @@ export const init = (sequelize) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
+      totalStock: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
       productMainPicture: {
         type: DataTypes.STRING,
         allowNull: false,

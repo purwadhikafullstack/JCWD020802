@@ -93,7 +93,7 @@ export function AddProductButton({ handleProductUpdate }) {
                 <Typography variant="h6" className="text-xs">Product</Typography>
             </Button>
             <Dialog
-                size="xs"
+                size="sm"
                 open={openProduct}
                 handler={handleCloseProduct}
                 className="bg-transparent shadow-none"

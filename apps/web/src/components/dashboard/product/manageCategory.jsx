@@ -6,9 +6,8 @@ import { FaArrowDownShortWide, FaArrowDownUpAcrossLine, FaArrowUpShortWide } fro
 import { PaginationButton } from "../../paginationButton";
 import { FilterCategory } from "./filterCategory";
 import { AddCategoryButton } from "./addCategoryButton";
-import { EditWarehouseAddressButton } from "../../edit/editWarehouseAddressButton";
-import { MoveToTrashWarehouse } from "../warehouse/moveToTrashWarehouse";
 import { EditCategoryButton } from "../../edit/editCategoryButton";
+import { MoveToTrashCategory } from "./moveToTrashCategory";
 
 export function ManageCategory() {
     const adminToken = localStorage.getItem('adminToken');
@@ -20,7 +19,11 @@ export function ManageCategory() {
     const [sortOrder, setSortOrder] = useState(null);
     const [categoryFilter, setCategoryFilter] = useState('');
 
-    const tableHead = ["Category Name", " ", ""];
+    const tableHead = [
+        {head: "Category Name", value: "categoryName"},
+        {head: " ", value: " "},
+        {head: "", value: ""}
+    ];
 
     const handleCategoryUpdate = () => {
         setCategoryUpdate(true)
@@ -49,7 +52,6 @@ export function ManageCategory() {
             const response = await Axios.get("categories/list", config)
             setCategoryList(response.data.categories)
             setTotalPages(response.data.totalPages);
-            toast.success("Success getting category data!")
         } catch (error) {
             if (error.response.status == 400) {
                 toast.error('Error Token')
@@ -79,9 +81,9 @@ export function ManageCategory() {
                         <tr>
                             {tableHead.map((head) => (
                             <th
-                                key={head}
+                                key={head.value}
                                 className="cursor-pointer border-b border-2 border-green-600 bg-green-800"
-                                onClick={() => handleSort(head.toLowerCase())}
+                                onClick={() => handleSort(head.value)}
                             >
                                 <div className="flex items-center justify-between p-4">
                                     <Typography
@@ -89,9 +91,9 @@ export function ManageCategory() {
                                         color="white"
                                         className="font-bold text-sm leading-none"
                                     >
-                                        {head}
+                                        {head.head}
                                     </Typography>
-                                    {sortBy === head.toLowerCase() && (
+                                    {sortBy === head.value && (
                                         <span>
                                             {
                                                 sortOrder === null ? <FaArrowDownUpAcrossLine color="white" /> : 
@@ -125,7 +127,7 @@ export function ManageCategory() {
                                     </td>
                                     <td className={classes}>
                                         <div className="flex justify-center">
-                                            <MoveToTrashWarehouse category={category} handleCategoryUpdate={handleCategoryUpdate} />
+                                            <MoveToTrashCategory category={category} handleCategoryUpdate={handleCategoryUpdate} />
                                         </div>
                                     </td>
                                 </tr>

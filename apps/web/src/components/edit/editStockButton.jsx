@@ -44,7 +44,7 @@ export function EditStockButton({ stock, handleStockUpdate }) {
         }
         try {
             setIsLoading(true)
-            await Axios.post(`stocks/edit/${stock.id}`, data, config);
+            await Axios.patch(`stocks/edit/${stock.id}`, data, config);
             handleClose()
             handleStockUpdate()
             toast.success('Stock successfully updated!');

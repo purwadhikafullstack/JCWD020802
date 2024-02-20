@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { RegisterGoogle } from "./registerGoogleEmail";
 import { FormEmail } from "../../form/formEmail";
 import { SubmitButton } from "../../form/submitButton";
+import { useNavigate } from "react-router-dom";
 
 const SendEmailSchema = Yup.object().shape({
     email: Yup.string()
@@ -17,6 +18,7 @@ const SendEmailSchema = Yup.object().shape({
 export function RegisterEmail() {
     const [openRegister, setOpenRegister] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate()
 
     const handleOpenRegister = () => setOpenRegister((cur) => !cur);
 
@@ -26,6 +28,8 @@ export function RegisterEmail() {
             await Axios.post("users/register-email", data);
             handleOpenRegister()
             toast.success('Email has been sent. Please check your email to verify and continue the registration process.');
+            navigate('/')
+            window.location.reload();
         } catch (error) {
             handleOpenRegister()
             if (error.response.status == 401) {
