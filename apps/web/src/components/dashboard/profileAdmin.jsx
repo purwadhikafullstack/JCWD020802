@@ -1,27 +1,20 @@
 import { Avatar, Card, CardHeader, Typography } from "@material-tailwind/react";
 import { useDispatch, useSelector } from "react-redux";
-import { EditFullname } from "../../edit/editFullname";
-import { EditBirthdate } from "../../edit/editBirthdate";
-import { EditGender } from "../../edit/editGender";
-import { EditEmail } from "../../edit/editEmail";
-import NullPhotoProfile from "../../../assets/null-profile-picture.png";
+import { EditFullname } from "../edit/editFullname";
+import { EditBirthdate } from "../edit/editBirthdate";
+import { EditGender } from "../edit/editGender";
+import { EditEmail } from "../edit/editEmail";
+import NullPhotoProfile from "../../assets/null-profile-picture.png";
 import { useEffect, useState } from "react";
-<<<<<<<< HEAD:apps/web/src/components/dashboard/profile/profileCustomer.jsx
-import { Axios } from "../../../lib/api";
-import { setData } from "../../../redux/userSlice";
-import { ChangePassword } from "../../edit/changePassword";
-import { ChangeProfilePicture } from "../../edit/changeProfilePicture";
-========
 import { Axios } from "../../lib/api";
 import { setData } from "../../redux/userSlice";
 import { ChangePassword } from "../edit/changePassword";
 import { ChangeProfilePicture } from "../edit/changeProfilePicture";
->>>>>>>> upstream/development:apps/web/src/components/dashboard/profileCustomer.jsx
 import { FaUser } from "react-icons/fa";
 
-export function MyProfile() {
+export function AdminProfile() {
     const user = useSelector((state) => state.user.value);
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("adminToken");
     const dispatch = useDispatch();
     const [userUpdate, setUserUpdate] = useState(false)
 
@@ -39,6 +32,7 @@ export function MyProfile() {
                 dispatch(setData(response.data))
             }
         } catch (error) {
+            console.error("Error fetching updated user data:", error);
         } finally {
             setUserUpdate(false)
         }
@@ -72,16 +66,12 @@ export function MyProfile() {
     }, [userUpdate, user])
 
     return(
-<<<<<<<< HEAD:apps/web/src/components/dashboard/profile/profileCustomer.jsx
-        <div className="flex flex-col mx-auto w-full justify-center items-center h-full gap-2">
-========
-        <div className="flex flex-col mx-auto w-full justify-center items-center h-full gap-2 lg:w-3/5">
->>>>>>>> upstream/development:apps/web/src/components/dashboard/profileCustomer.jsx
-            <div className="flex w-full items-center gap-2">
-                <FaUser fontSize={'30px'}/>
-                <Typography variant="h4" color="blue-gray">My Profile</Typography>
+        <div className="h-screen flex flex-col gap-1">
+            <div className="flex w-full items-center gap-3 pt-2 pl-2">
+                <FaUser fontSize={'30px'} />
+                <Typography variant="h3" color="blue-gray">My Profile</Typography>
             </div>
-            <Card className="w-full flex flex-col justify-center gap-2 p-3 border-solid border-brown-500 border-2 lg:flex-row">
+            <Card className="h-full py-4 px-4 flex flex-col lg:flex-row gap-4">
                 <div className="flex flex-col w-full items-center gap-2 lg:w-96">
                     <Card className="flex flex-col w-full px-5 items-center gap-2 py-2 border-solid border-gray-300 border-2 lg:w-72">
                         {
